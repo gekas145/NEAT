@@ -1,3 +1,4 @@
+import pygame
 from pygame import Rect as rc
 
 
@@ -9,7 +10,7 @@ class Map:
         width_ls = [width, 60, 80, 10, 60, 20, 60, 70, 10, 80, 80, 20, 60, 20, 40, 80, 160, 20, 70, 10, 70, 10]
         height_ls = [height, 40, 40, 60, 20, 100, 20, 20, 40, 60, 60, 60, 20, 60, 40, 20, 20, 60, 40, 40, 20, 40]
 
-        map_start = [0] * len(left_ls)
+        map_start = [pygame.Rect(0, 0, 0, 0)] * len(left_ls)
 
         for i in range(len(map_start)):
             map_start[i] = rc(left_ls[i], top_ls[i], width_ls[i], height_ls[i])

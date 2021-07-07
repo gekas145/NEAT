@@ -5,10 +5,12 @@ class Pacman:
 
     def __init__(self):
         self.radius = 9
-        self.x = 100
-        self.y = 100
+        self.x = 10
+        self.y = 10
         self.speed = 0.2
-        self.vector = 1
+        self.vector = 2
+        self.front_point_x = self.x + self.radius + 2
+        self.front_point_y = self.y
 
     def move(self):
         if self.vector == 1:
@@ -22,9 +24,24 @@ class Pacman:
 
     def set_vector(self, new_vector):
         self.vector = new_vector
+        if self.vector == 1:
+            self.front_point_x = self.x - self.radius - 2
+            self.front_point_y = self.y
+        elif self.vector == 2:
+            self.front_point_x = self.x + self.radius
+            self.front_point_y = self.y
+        elif self.vector == 3:
+            self.front_point_x = self.x
+            self.front_point_y = self.y - self.radius
+        else:
+            self.front_point_x = self.x
+            self.front_point_y = self.y + self.radius
 
     def get_xy(self):
-        return (self.x, self.y)
+        return self.x, self.y
+
+    def get_front_xy(self):
+        return self.front_point_x, self.front_point_y
 
     def get_radius(self):
         return self.radius
