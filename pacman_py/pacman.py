@@ -1,5 +1,6 @@
 import pygame
 
+
 class Pacman:
 
     def __init__(self):
@@ -27,4 +28,3 @@ class Pacman:
 
     def get_radius(self):
         return self.radius
-

@@ -4,6 +4,7 @@ import pacman_py.map as map
 import pacman_py.pacman as pacman
 import time
 
+
 def redraw(screen, pacman, map):
     black = [0, 0, 0]
     yellow = (255, 211, 67)
@@ -19,10 +20,11 @@ def redraw(screen, pacman, map):
 
     pygame.display.update()
 
+
 def main():
     (width, height) = (420, 420)
     black = [0, 0, 0]
-    yellow = (255,211,67)
+    yellow = (255, 211, 67)
     mp = map.Map(width, height).get_map()
     pc = pacman.Pacman()
 
@@ -50,8 +52,6 @@ def main():
                 elif event.key == pygame.K_RIGHT:
                     pc.set_vector(2)
                     # pc.move()
-
-
 
 
 if __name__ == "__main__":
