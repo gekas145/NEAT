@@ -5,14 +5,15 @@ import pacman_py.pacman as pacman
 import time
 
 
-def check_collision(ls, pacman):
+def check_collision(mp, pc):
     """
-    :return: bool, True if there is a collision
+    :return: bool, True if there is collision
     """
-    for i in range(2, len(ls)):
-        if ls[i].collidepoint(pacman.get_front_xy()):
+    for i in range(1, len(mp)):
+        if mp[i].collidepoint(pc.get_front_xy()):
             return True
     return False
+
 
 def redraw(screen, pacman, map):
     black = [0, 0, 0]
@@ -42,10 +43,10 @@ def main():
 
     running = True
     while running:
-        time.sleep(0.01)
-        redraw(screen, pc, mp)
         if not check_collision(mp, pc):
             pc.move()
+        time.sleep(0.01)
+        redraw(screen, pc, mp)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
