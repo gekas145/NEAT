@@ -6,7 +6,7 @@ class Pacman:
         self.radius = 10
         self.x = 100
         self.y = 100
-        self.speed = 1
+        self.speed = 0.2
         self.vector = 1
 
     def move(self):
