@@ -13,7 +13,7 @@ def redraw(screen, pacman, map):
     screen.fill(black)
     pygame.draw.circle(screen, yellow, pacman.get_xy(), pacman.get_radius())
     for i in range(len(map)):
-        if i != 0:
+        if i != 0 and i != len(map) - 1:
             pygame.draw.rect(screen, blue, map[i])
         else:
             pygame.draw.rect(screen, blue, map[i], width=3)
@@ -22,7 +22,7 @@ def redraw(screen, pacman, map):
 
 
 def main():
-    (width, height) = (420, 420)
+    (width, height) = (420, 423)
     black = [0, 0, 0]
     yellow = (255, 211, 67)
     mp = map.Map(width, height).get_map()

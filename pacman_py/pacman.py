@@ -4,7 +4,7 @@ import pygame
 class Pacman:
 
     def __init__(self):
-        self.radius = 10
+        self.radius = 9
         self.x = 100
         self.y = 100
         self.speed = 0.2
