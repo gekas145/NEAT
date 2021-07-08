@@ -5,19 +5,26 @@ import pacman_py.pacman as pacman
 import time
 
 
-def check_collision(mp, pc):
+def check_collision(mp, pc, height, width):
     """
     :return: bool, True if there is collision
     """
     for i in range(1, len(mp)):
         if mp[i].collidepoint(pc.get_front_xy()):
             return True
+
+    x, y = pc.get_front_xy()
+    if x >= width or x <= 3:
+        return True
+    elif y >= height + 3 or y <= 3:
+        return True
+
     return False
 
 
 def redraw(screen, pacman, map):
     black = [0, 0, 0]
-    yellow = (255, 211, 67)
+    yellow = [255, 211, 67]
     blue = [0, 0, 255]
 
     screen.fill(black)
@@ -32,9 +39,7 @@ def redraw(screen, pacman, map):
 
 
 def main():
-    (width, height) = (420, 423)
-    black = [0, 0, 0]
-    yellow = (255, 211, 67)
+    (width, height) = (420, 424)
     mp = map.Map(width, height).get_map()
     pc = pacman.Pacman()
 
@@ -43,7 +48,7 @@ def main():
 
     running = True
     while running:
-        if not check_collision(mp, pc):
+        if not check_collision(mp, pc, width, height):
             pc.move()
         time.sleep(0.01)
         redraw(screen, pc, mp)
