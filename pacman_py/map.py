@@ -19,7 +19,7 @@ class Map:
         for i in range(1, len(map)):
             map.append(rc(2*width//2 - left_ls[i] - width_ls[i], top_ls[i], width_ls[i], height_ls[i]))
 
-        map.append(rc(143, 163, 137, 60))
+        map.append(rc(143, 163, 134, 60))
 
         self.map = map
 
