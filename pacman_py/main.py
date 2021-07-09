@@ -26,11 +26,13 @@ def check_corner(corners, pc):
     for i in range(len(corners)):
         x, y = corners[i]
         a, b = pc.get_xy()
-        if np.sqrt((x - a)**2 + (y - b)**2) <= 0.01:
+        if np.sqrt((x - a)**2 + (y - b)**2) <= 3:
             return True
         # if corners[i] == pc.get_xy():
         #     return True
     return False
+
+
 
 
 def redraw(screen, pacman, map, corners):
@@ -76,26 +78,26 @@ def main():
                     pc.set_vector(3)
                     if check_collision(mp, pc, width, height):
                         pc.set_vector(old_vector)
-                    memorized_vector = 3
+                        memorized_vector = 3
                 elif event.key == pygame.K_DOWN:
                     pc.set_vector(4)
                     if check_collision(mp, pc, width, height):
                         pc.set_vector(old_vector)
-                    memorized_vector = 4
+                        memorized_vector = 4
                 elif event.key == pygame.K_LEFT:
                     pc.set_vector(1)
                     if check_collision(mp, pc, width, height):
                         pc.set_vector(old_vector)
-                    memorized_vector = 1
+                        memorized_vector = 1
                 elif event.key == pygame.K_RIGHT:
                     pc.set_vector(2)
                     if check_collision(mp, pc, width, height):
                         pc.set_vector(old_vector)
-                    memorized_vector = 2
+                        memorized_vector = 2
         if check_corner(corners, pc) and memorized_vector is not None:
             pc.set_vector(memorized_vector)
-            print(memorized_vector)
             memorized_vector = None
+        # print(check_corner1(corners, pc))
             # print(check_corner(corners, pc))
         # print(pc.get_vector())
         # print(memorized_vector)
