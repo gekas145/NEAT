@@ -5,7 +5,7 @@ import pacman_py.pacman as pacman
 import time
 
 
-def check_collision(mp, pc, height, width):
+def check_collision(mp, pc, width, height):
     """
     :return: bool, True if there is collision
     """
@@ -14,9 +14,9 @@ def check_collision(mp, pc, height, width):
             return True
 
     x, y = pc.get_front_xy()
-    if x >= width or x <= 3:
+    if x >= width - 3 or x <= 3:
         return True
-    elif y >= height + 3 or y <= 3:
+    elif y >= height - 1 or y <= 3:
         return True
 
     return False
@@ -56,18 +56,23 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
+                old_vector = pc.get_vector()
                 if event.key == pygame.K_UP:
                     pc.set_vector(3)
-                    # pc.move()
+                    if check_collision(mp, pc, width, height):
+                        pc.set_vector(old_vector)
                 elif event.key == pygame.K_DOWN:
                     pc.set_vector(4)
-                    # pc.move()
+                    if check_collision(mp, pc, width, height):
+                        pc.set_vector(old_vector)
                 elif event.key == pygame.K_LEFT:
                     pc.set_vector(1)
-                    # pc.move()
+                    if check_collision(mp, pc, width, height):
+                        pc.set_vector(old_vector)
                 elif event.key == pygame.K_RIGHT:
                     pc.set_vector(2)
-                    # pc.move()
+                    if check_collision(mp, pc, width, height):
+                        pc.set_vector(old_vector)
 
 
 if __name__ == "__main__":

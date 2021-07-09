@@ -7,7 +7,7 @@ class Pacman:
         self.radius = 9
         self.x = 13
         self.y = 13
-        self.speed = 1
+        self.speed = 0.5
         self.vector = 2
         self.front_point_x = self.x + self.radius + 1.5
         self.front_point_y = self.y
@@ -49,3 +49,7 @@ class Pacman:
 
     def get_radius(self):
         return self.radius
+
+
+    def get_vector(self):
+        return self.vector
