@@ -65,9 +65,6 @@ def redraw(screen, pacman, map, corners):
         else:
             pygame.draw.rect(screen, blue, map[i], width=3)
 
-    for i in range(len(corners)):
-        pygame.draw.circle(screen, yellow, corners[i], 4)
-
     pygame.display.update()
 
 
