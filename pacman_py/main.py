@@ -5,24 +5,16 @@ import pacman_py.pacman as pacman
 import time
 
 
-def check_new_vector(new_vector, mp, pc, width, height):
-    old_vector = pc.get_vector()
-    pc.set_vector(new_vector)
-    if check_collision(mp, pc, width, height):
-        pc.set_vector(old_vector)
-        return None
-    return pc
-
-
 def check_collision(mp, pc, width, height):
     """
     :return: bool, True if there is collision
     """
-    for i in range(1, len(mp)):
-        if mp[i].collidepoint(pc.get_front_xy()):
-            return True
 
     x, y = pc.get_front_xy()
+    for i in range(1, len(mp)):
+        if mp[i].collidepoint([x, y]):
+            return True
+
     if x >= width - 3 or x <= 3:
         return True
     elif y >= height - 1 or y <= 3:
@@ -31,7 +23,36 @@ def check_collision(mp, pc, width, height):
     return False
 
 
-def redraw(screen, pacman, map):
+def check_corners_collision(pc, corners):
+    x, y = pc.get_xy()
+    for i in range(len(corners)):
+        if np.sqrt((x - corners[i][0]) ** 2 + (y - corners[i][1]) ** 2) <= 1.5:
+            return True
+    return False
+
+
+def check_turn(old_vector, new_vector):
+    if np.abs(old_vector - new_vector) == 1 and old_vector + new_vector != 5:
+        return False
+    return True
+
+
+def check_new_vector(new_vector, mp, pc, corners, width, height):
+    old_vector = pc.get_vector()
+
+    if not check_turn(old_vector, new_vector):
+        pc.set_vector(new_vector)
+        return pc
+
+    pc.set_vector(new_vector)
+    if check_corners_collision(pc, corners) and not check_collision(mp, pc, width, height):
+        return pc
+
+    pc.set_vector(old_vector)
+    return None
+
+
+def redraw(screen, pacman, map, corners):
     black = [0, 0, 0]
     yellow = [255, 211, 67]
     blue = [0, 0, 255]
@@ -44,16 +65,19 @@ def redraw(screen, pacman, map):
         else:
             pygame.draw.rect(screen, blue, map[i], width=3)
 
+    for i in range(len(corners)):
+        pygame.draw.circle(screen, yellow, corners[i], 4)
+
     pygame.display.update()
 
 
 def main():
     (width, height) = (420, 424)
-    mp = map.Map(width, height).get_map()
+    mp, corners = map.Map(width, height).get_attributes()
     pc = pacman.Pacman()
 
     screen = pygame.display.set_mode((width, height))
-    redraw(screen, pc, mp)
+    redraw(screen, pc, mp, corners)
 
     running = True
     memorized_vector = None
@@ -61,34 +85,34 @@ def main():
         if not check_collision(mp, pc, width, height):
             pc.move()
         time.sleep(0.01)
-        redraw(screen, pc, mp)
+        redraw(screen, pc, mp, corners)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    tmp = check_new_vector(3, mp, pc, width, height)
+                    tmp = check_new_vector(3, mp, pc, corners, width, height)
                     if tmp is not None:
                         pc = tmp
                         memorized_vector = None
                     else:
                         memorized_vector = 3
                 elif event.key == pygame.K_DOWN:
-                    tmp = check_new_vector(4, mp, pc, width, height)
+                    tmp = check_new_vector(4, mp, pc, corners, width, height)
                     if tmp is not None:
                         pc = tmp
                         memorized_vector = None
                     else:
                         memorized_vector = 4
                 elif event.key == pygame.K_LEFT:
-                    tmp = check_new_vector(1, mp, pc, width, height)
+                    tmp = check_new_vector(1, mp, pc, corners, width, height)
                     if tmp is not None:
                         pc = tmp
                         memorized_vector = None
                     else:
                         memorized_vector = 1
                 elif event.key == pygame.K_RIGHT:
-                    tmp = check_new_vector(2, mp, pc, width, height)
+                    tmp = check_new_vector(2, mp, pc, corners, width, height)
                     if tmp is not None:
                         pc = tmp
                         memorized_vector = None
@@ -96,7 +120,7 @@ def main():
                         memorized_vector = 2
         tmp = None
         if memorized_vector is not None:
-            tmp = check_new_vector(memorized_vector, mp, pc, width, height)
+            tmp = check_new_vector(memorized_vector, mp, pc, corners, width, height)
         if tmp is not None:
             pc = tmp
 

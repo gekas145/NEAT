@@ -4,7 +4,7 @@ import pygame
 class Pacman:
 
     def __init__(self):
-        self.radius = 9
+        self.radius = 9.5
         self.x = 13
         self.y = 13
         self.speed = 1
@@ -50,7 +50,6 @@ class Pacman:
 
     def get_radius(self):
         return self.radius
-
 
     def get_vector(self):
         return self.vector

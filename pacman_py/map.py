@@ -17,13 +17,20 @@ class Map:
 
         map = map_start.copy()
         for i in range(1, len(map)):
-            map.append(rc(2*width//2 - left_ls[i] - width_ls[i], top_ls[i], width_ls[i], height_ls[i]))
+            map.append(rc(2 * width // 2 - left_ls[i] - width_ls[i], top_ls[i], width_ls[i], height_ls[i]))
 
         map.append(rc(143, 163, 134, 60))
 
         self.map = map
 
+        self.corners = [[13, 13], [93, 13], [193, 13], [13, 73], [93, 73], [193, 73],
+                        [13, 113], [93, 113], [133, 113], [133, 73], [193, 113], [93, 193],
+                        [133, 193], [133, 153], [193, 153], [133, 233], [133, 273], [93, 273],
+                        [13, 273], [13, 313], [53, 313], [53, 373], [13, 373], [13, 413], [93, 373],
+                        [93, 313], [133, 313], [193, 313], [193, 273], [133, 373], [193, 373], [193, 413]]
 
-    def get_map(self):
-        return self.map
+        for i in range(len(self.corners)):
+            self.corners.append([2 * width // 2 - self.corners[i][0], self.corners[i][1]])
 
+    def get_attributes(self):
+        return self.map, self.corners
