@@ -32,5 +32,22 @@ class Map:
         for i in range(len(self.corners)):
             self.corners.append([2 * width // 2 - self.corners[i][0], self.corners[i][1]])
 
+        self.points = []
+        for i in range(13, width // 2 - 5, 20):
+            for j in range(13, height - 3, 20):
+                collide = False
+                for k in range(1, len(self.map)):
+                    if self.map[k].collidepoint(i, j):
+                        collide = True
+                        break
+                if not collide:
+                    self.points.append([i, j])
+                else:
+                    continue
+
+        for i in range(len(self.points)):
+            self.points.append([2 * width // 2 - self.points[i][0], self.points[i][1]])
+
+
     def get_attributes(self):
-        return self.map, self.corners
+        return self.map, self.corners, self.points

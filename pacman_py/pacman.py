@@ -1,6 +1,3 @@
-import pygame
-
-
 class Pacman:
 
     def __init__(self):

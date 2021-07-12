@@ -52,7 +52,21 @@ def check_new_vector(new_vector, mp, pc, corners, width, height):
     return None
 
 
-def redraw(screen, pacman, map, corners):
+def check_points(pc, points):
+    x, y = pc.get_xy()
+    index = None
+    for i in range(len(points)):
+        if np.sqrt((x - points[i][0]) ** 2 + (y - points[i][1]) ** 2) <= pc.get_radius():
+            index = i
+            break
+
+    if index is not None:
+        points.pop(index)
+
+    return points
+
+
+def redraw(screen, pacman, map, points):
     black = [0, 0, 0]
     yellow = [255, 211, 67]
     blue = [0, 0, 255]
@@ -65,16 +79,20 @@ def redraw(screen, pacman, map, corners):
         else:
             pygame.draw.rect(screen, blue, map[i], width=3)
 
+    for i in range(len(points)):
+        pygame.draw.circle(screen, yellow, points[i], 3)
+
     pygame.display.update()
 
 
 def main():
     (width, height) = (420, 424)
-    mp, corners = map.Map(width, height).get_attributes()
+    mp, corners, points = map.Map(width, height).get_attributes()
     pc = pacman.Pacman()
 
     screen = pygame.display.set_mode((width, height))
-    redraw(screen, pc, mp, corners)
+    points = check_points(pc, points)
+    redraw(screen, pc, mp, points)
 
     running = True
     memorized_vector = None
@@ -82,7 +100,8 @@ def main():
         if not check_collision(mp, pc, width, height):
             pc.move()
         time.sleep(0.01)
-        redraw(screen, pc, mp, corners)
+        points = check_points(pc, points)
+        redraw(screen, pc, mp, points)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
