@@ -52,26 +52,27 @@ def check_new_vector(new_vector, mp, pc, corners, width, height):
     return None
 
 
-def check_points(pc, points):
+def check_points(pc, points, score):
     x, y = pc.get_xy()
     index = None
     for i in range(len(points)):
         if np.sqrt((x - points[i][0]) ** 2 + (y - points[i][1]) ** 2) <= pc.get_radius():
             index = i
+            score += 1
             break
 
     if index is not None:
         points.pop(index)
 
-    return points
+    return points, score
 
 
-def redraw(screen, pacman, map, points):
+def redraw(screen, pacman, map, points, width, height):
     black = [0, 0, 0]
     yellow = [255, 211, 67]
     blue = [0, 0, 255]
 
-    screen.fill(black)
+    pygame.draw.rect(screen, black, [0, 0, width, height])
     pygame.draw.circle(screen, yellow, pacman.get_xy(), pacman.get_radius())
     for i in range(len(map)):
         if i != 0 and i != len(map) - 1:
@@ -85,14 +86,34 @@ def redraw(screen, pacman, map, points):
     pygame.display.update()
 
 
+def redraw_labels(screen, score):
+    pygame.draw.rect(screen, [0, 0, 0], [0, 426, 420, 40])
+
+    font = pygame.font.SysFont("monospace", 20)
+
+    text = font.render("Epoc number: ", 0, [255, 255, 255])
+    screen.blit(text, (30, 430))
+
+    text1 = font.render("Score: " + str(score), 0, [255, 255, 255])
+    screen.blit(text1, (300, 430))
+
+    pygame.display.update()
+
+
 def main():
     (width, height) = (420, 424)
+    bottom_margin = 30
     mp, corners, points = map.Map(width, height).get_attributes()
     pc = pacman.Pacman()
 
-    screen = pygame.display.set_mode((width, height))
-    points = check_points(pc, points)
-    redraw(screen, pc, mp, points)
+    pygame.init()
+    screen = pygame.display.set_mode((width, height + bottom_margin))
+    score = 0
+    old_score = 0
+    points, score = check_points(pc, points, score)
+    redraw(screen, pc, mp, points, width, height)
+
+    redraw_labels(screen, score)
 
     running = True
     memorized_vector = None
@@ -100,8 +121,11 @@ def main():
         if not check_collision(mp, pc, width, height):
             pc.move()
         time.sleep(0.01)
-        points = check_points(pc, points)
-        redraw(screen, pc, mp, points)
+        points, score = check_points(pc, points, score)
+        if old_score != score:
+            redraw_labels(screen, score)
+            old_score = score
+        redraw(screen, pc, mp, points, width, height)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
