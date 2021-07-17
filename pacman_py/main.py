@@ -104,7 +104,7 @@ def main():
     (width, height) = (420, 424)
     bottom_margin = 30
     mp, corners, points = map.Map(width, height).get_attributes()
-    pc = pacman.Pacman()
+    pc = pacman.Pacman(13, 13)
 
     pygame.init()
     screen = pygame.display.set_mode((width, height + bottom_margin))

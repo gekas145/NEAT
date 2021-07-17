@@ -4,6 +4,7 @@ import pacman_py.map as map
 import pacman_py.pacman as pacman
 import time
 import random
+import pacman_py.ghost as ghost
 
 
 def check_collision(mp, pc, width, height):
@@ -68,10 +69,13 @@ def check_points(pc, points, score):
     return points, score
 
 
-def redraw(screen, pacman, map, points, width, height):
+
+
+def redraw(screen, pacman, ghosts, map, points, width, height):
     black = [0, 0, 0]
     yellow = [255, 211, 67]
     blue = [0, 0, 255]
+    red = [255, 0, 0]
 
     pygame.draw.rect(screen, black, [0, 0, width, height])
     pygame.draw.circle(screen, yellow, pacman.get_xy(), pacman.get_radius())
@@ -83,6 +87,9 @@ def redraw(screen, pacman, map, points, width, height):
 
     for i in range(len(points)):
         pygame.draw.circle(screen, yellow, points[i], 3)
+
+    for i in range(len(ghosts)):
+        pygame.draw.circle(screen, red, ghosts[i].get_xy(), ghosts[i].get_radius())
 
     pygame.display.update()
 
@@ -105,14 +112,15 @@ def main():
     (width, height) = (420, 424)
     bottom_margin = 30
     mp, corners, points = map.Map(width, height).get_attributes()
-    pc = pacman.Pacman()
+    pc = pacman.Pacman(13, 13)
+    ghosts = [ghost.Ghost(234, 13)]
 
     pygame.init()
     screen = pygame.display.set_mode((width, height + bottom_margin))
     score = 0
     old_score = 0
     points, score = check_points(pc, points, score)
-    redraw(screen, pc, mp, points, width, height)
+    redraw(screen, pc, ghosts, mp, points, width, height)
 
     redraw_labels(screen, score)
 
@@ -123,12 +131,15 @@ def main():
         iter_count += 1
         if not check_collision(mp, pc, width, height):
             pc.move()
+        for i in range(len(ghosts)):
+            if not check_collision(mp, ghosts[i], width, height):
+                ghosts[i].move()
         time.sleep(0.01)
         points, score = check_points(pc, points, score)
         if old_score != score:
             redraw_labels(screen, score)
             old_score = score
-        redraw(screen, pc, mp, points, width, height)
+        redraw(screen, pc, ghosts, mp, points, width, height)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -168,6 +179,9 @@ def main():
             tmp = check_new_vector(memorized_vector, mp, pc, corners, width, height)
         if tmp is not None:
             pc = tmp
+        for i in range(len(ghosts)):
+            if check_corners_collision(ghosts[i], corners) and random.randint(1, 4) == 1:
+                ghosts[i].set_vector(random.randint(1, 5))
 
 
 if __name__ == "__main__":

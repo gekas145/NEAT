@@ -1,9 +1,9 @@
 class Pacman:
 
-    def __init__(self):
+    def __init__(self, x, y):
         self.radius = 9.5
-        self.x = 13
-        self.y = 13
+        self.x = x
+        self.y = y
         self.speed = 1
         self.vector = 2
         self.front_point_x = self.x + self.radius + 1.5
