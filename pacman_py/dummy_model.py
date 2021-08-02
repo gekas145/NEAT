@@ -113,7 +113,7 @@ def main():
     bottom_margin = 30
     mp, corners, points = map.Map(width, height).get_attributes()
     pc = pacman.Pacman(13, 13)
-    ghosts = [ghost.Ghost(234, 13)]
+    ghosts = [ghost.Ghost(234, 13), ghost.Ghost(93, 274)]
 
     pygame.init()
     screen = pygame.display.set_mode((width, height + bottom_margin))
