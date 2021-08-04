@@ -2,13 +2,12 @@ import numpy as np
 
 
 class Node:
-    def __init__(self, id_num, layer, output_pos=None):
+    def __init__(self, id_num, layer):
         self.id = id_num
         self.layer = layer
         self.connections = []
         self.output_sum = 0.0
         self.output_val = 0.0
-        self.output_pos = output_pos # None if not located in output layer
 
     def add_connection(self, connection):
         self.connections.append(connection)

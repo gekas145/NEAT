@@ -6,22 +6,26 @@ from random import uniform
 class NeuralNetwork:
     def __init__(self, inputs_num, outputs_num):
 
-        self.connections = []
-        self.nodes = []  # by id
-        self.nodes_ordered = []  # by layers
+        self.connections = []  # sorted by innovation number
+        self.nodes = []  # sorted by id
+        self.nodes_ordered = []  # sorted by layers
         self.layers_cardinalities = [inputs_num, outputs_num]
         self.next_node_id = inputs_num + outputs_num
+        self.input_nodes = []
+        self.output_nodes = []
 
         id_num = 0
         for i in range(inputs_num):
-            self.nodes.append(Node(id_num, 0))
+            node = Node(id_num, 0)
+            self.nodes.append(node)
+            self.input_nodes.append(node)
             id_num += 1
 
-        output_pos = 0
         for i in range(outputs_num):
-            self.nodes.append(Node(id_num, 1, output_pos))
+            node = Node(id_num, 1)
+            self.nodes.append(node)
+            self.output_nodes.append(node)
             id_num += 1
-            output_pos += 1
 
         innov = 0
         for i in range(inputs_num):
@@ -35,7 +39,13 @@ class NeuralNetwork:
                 innov += 1
 
         self.nodes_ordered = self.nodes.copy()
+        self.prepare_nodes()
+
+    def prepare_nodes(self):
         self.nodes_ordered.sort(key=lambda x: x.layer)
+
+    def prepare_connections(self):
+        self.connections.sort(key=lambda x: x.innovation_number)
 
     def is_fully_connected(self):
         connections_num = 0
@@ -48,22 +58,38 @@ class NeuralNetwork:
 
         return False
 
-
     def feedforward(self, inputs):
         for i in range(len(inputs)):
-           self.nodes[i].output_val = inputs[i]
+            self.input_nodes[i].output_val = inputs[i]
 
-        res = []
         for node in self.nodes_ordered:
             if node.layer != 0:
                 node.output_val = Node.sigmoid(node.output_sum)
 
             if node.layer == len(self.layers_cardinalities) - 1:
-                res.append(node)
                 continue
 
             for connection in node.connections:
                 if connection.enabled:
                     connection.to_node.output_sum += connection.weight * node.output_val
 
-        return res
+        return self.output_nodes
+
+    def check_nodes(self, node1, node2):
+        if node1.layer == node2.layer:
+            return False
+
+        for connection in self.connections:
+            if connection.from_node.id == node1.id and connection.to_node.id == node2.id:
+                return False
+            elif connection.from_node.id == node2.id and connection.to_node.id == node1.id:
+                return False
+
+        return True
+
+    def add_connection(self, connection):
+        self.nodes[connection.from_node.id].connections.append(connection.to_node)
+        self.connections.append(connection)
+
+    def add_node(self, node, node_left, node_right):
+        pass
