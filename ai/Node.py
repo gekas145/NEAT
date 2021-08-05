@@ -15,6 +15,9 @@ class Node:
     def __repr__(self):
         return "id: " + str(self.id) + ", layer: " + str(self.layer) + ", val: " + str(self.output_val)
 
+    def __copy__(self):
+        return Node(self.id, self.layer)
+
     @staticmethod
     def sigmoid(x):
         return 1/(1 + np.exp(-x))

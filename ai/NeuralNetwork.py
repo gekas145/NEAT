@@ -67,29 +67,40 @@ class NeuralNetwork:
                 node.output_val = Node.sigmoid(node.output_sum)
 
             if node.layer == len(self.layers_cardinalities) - 1:
+                node.output_sum = 0
                 continue
 
             for connection in node.connections:
                 if connection.enabled:
                     connection.to_node.output_sum += connection.weight * node.output_val
 
+            node.output_sum = 0
+
         return self.output_nodes
 
-    def check_nodes(self, node1, node2):
+    def check_nodes(self, node1, node2, criterion):
+        # criterion - bool, True if used before add_node, False if before add_connection
         if node1.layer == node2.layer:
             return False
 
         for connection in self.connections:
             if connection.from_node.id == node1.id and connection.to_node.id == node2.id:
-                return False
-            elif connection.from_node.id == node2.id and connection.to_node.id == node1.id:
-                return False
+                return criterion
+            if connection.from_node.id == node2.id and connection.to_node.id == node1.id:
+                return criterion
 
-        return True
+        return not criterion
 
     def add_connection(self, connection):
         self.nodes[connection.from_node.id].connections.append(connection.to_node)
         self.connections.append(connection)
 
-    def add_node(self, node, node_left, node_right):
-        pass
+    def add_node(self, node, connection_left, connection_right):
+        for connection in self.connections:
+            if connection.from_node.id == connection_left.from_node.id and \
+                    connection.to_node.id == connection_right.to_node.id:
+                connection.enabled = False
+                break
+
+        self.connections.append(connection_left)
+        self.connections.append(connection_right)

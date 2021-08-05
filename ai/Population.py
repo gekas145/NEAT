@@ -12,8 +12,8 @@ class Population:
             self.organisms.append(NeuralNetwork(inputs_num, outputs_num))
 
 
-
-    def add_connection(self):
+    @staticmethod
+    def add_connection():
         pass
 
 
