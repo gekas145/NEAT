@@ -104,9 +104,9 @@ class NeuralNetwork:
 
         node = connection_left.to_node
         layer = connection_right.to_node.layer
-        self.connections.append(connection_left)
-        self.connections.append(connection_right)
         self.nodes.append(node)
+        self.add_connection(connection_left)
+        self.add_connection(connection_right)
         self.layers_cardinalities.insert(layer, 1)
 
         start = sum(self.layers_cardinalities[0:layer])
