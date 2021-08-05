@@ -92,15 +92,27 @@ class NeuralNetwork:
         return not criterion
 
     def add_connection(self, connection):
-        self.nodes[connection.from_node.id].connections.append(connection.to_node)
+        self.nodes[connection.from_node.id].add_connection(connection)
         self.connections.append(connection)
 
-    def add_node(self, node, connection_left, connection_right):
+    def add_node(self, connection_left, connection_right):
         for connection in self.connections:
             if connection.from_node.id == connection_left.from_node.id and \
                     connection.to_node.id == connection_right.to_node.id:
                 connection.enabled = False
                 break
 
+        node = connection_left.to_node
+        layer = connection_right.to_node.layer
         self.connections.append(connection_left)
         self.connections.append(connection_right)
+        self.nodes.append(node)
+        self.layers_cardinalities.insert(layer, 1)
+
+        start = sum(self.layers_cardinalities[0:layer])
+        for i in range(start, len(self.nodes_ordered)):
+            self.nodes_ordered[i].layer += 1
+
+        self.nodes_ordered.append(node)
+        self.prepare_nodes()
+

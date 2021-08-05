@@ -11,9 +11,13 @@ class Population:
         for i in range(n):
             self.organisms.append(NeuralNetwork(inputs_num, outputs_num))
 
+    def check_innovation_num(self, conn):
+        for connection in self.connections_history:
+            if connection.from_node.id == conn.from_node.id and \
+                    connection.to_node.id == conn.from_node.id:
+                return connection.innovation_number
 
-    @staticmethod
-    def add_connection():
+        return None
+
+    def add_connection(self):
         pass
-
-

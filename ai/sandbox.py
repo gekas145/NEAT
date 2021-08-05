@@ -1,3 +1,5 @@
+import copy
+
 from Node import Node
 from Connection import Connection
 from NeuralNetwork import NeuralNetwork as nn
@@ -17,7 +19,11 @@ a = [node, node1, node2]
 
 print(a)
 
-for node in a:
-    node.layer += 1
+b = copy.deepcopy(a)
 
+print(b)
+
+a = [1, 2, 3, 4]
+# a.insert(1, 4)
+print(a[0:2])
 print(a)
