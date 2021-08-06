@@ -5,35 +5,19 @@ from Node import Node
 from Connection import Connection
 from NeuralNetwork import NeuralNetwork as nn
 from random import uniform, sample
+from ai.Population import Population
 
-net = nn(3, 2)
+# net = nn(3, 2)
 
-print(net.feedforward([0.5, 0, 1]))
-# print(uniform(0, 1))
-# print(net.is_fully_connected())
+population = Population(1, 3, 2)
 
-node = Node(0, 0)
-node1 = Node(1, 0)
-node2 = Node(2, 1)
+net = population.organisms[0]
 
-a = [node, node1, node2]
+for i in range(5):
+    population.add_node(net)
+# print(net.feedforward([0.5, 1, 1]))
 
-# print(a)
-
-# b = copy.deepcopy(a)
-
-# print(b)
-# print("node", node)
-# print("node1", node1)
-# node, node1 = node1, node
-# print("node", node)
-# print("node1", node1)
-
-
-def alter_id(node):
-    node.id += 1
-
-
-print(node)
-alter_id(node)
-print(node)
+for node in net.nodes_ordered:
+    print(node)
+population.add_connection(net)
+print(net.feedforward([0, 0.5, 1]))

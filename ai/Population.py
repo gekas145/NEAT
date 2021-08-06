@@ -1,6 +1,7 @@
 from NeuralNetwork import NeuralNetwork
-from random import sample, uniform
+from random import sample, uniform, randint
 from Connection import Connection
+from Node import Node
 
 
 class Population:
@@ -32,6 +33,7 @@ class Population:
 
     def add_connection(self, net):
         if net.is_fully_connected():
+            print("failed")
             return
 
         node1, node2 = sample(net.nodes, 2)
@@ -45,5 +47,24 @@ class Population:
         self.check_connection(connection)
         net.add_connection(connection)
 
-    def add_node(self):
-        pass
+    def add_node(self, net):
+        node1, node2 = sample(net.nodes, 2)
+        while not net.check_nodes(node1, node2, True):
+            node1, node2 = sample(net.nodes, 2)
+
+        if node1.layer > node2.layer:
+            node1, node2 = node2, node1
+
+        if node2.layer - node1.layer == 1:
+            node = Node(net.next_node_id, node2.layer)
+        else:
+            node = Node(net.next_node_id, randint(node1.layer + 1, node2.layer - 1))
+        net.next_node_id += 1
+
+        connection1 = Connection(node1, node, uniform(0, 1))
+        self.check_connection(connection1)
+
+        connection2 = Connection(node, node2, uniform(0, 1))
+        self.check_connection(connection2)
+
+        net.add_node(connection1, connection2)

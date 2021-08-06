@@ -103,16 +103,18 @@ class NeuralNetwork:
                 break
 
         node = connection_left.to_node
-        layer = connection_right.to_node.layer
+        layer = connection_left.to_node.layer
         self.nodes.append(node)
         self.add_connection(connection_left)
         self.add_connection(connection_right)
-        self.layers_cardinalities.insert(layer, 1)
 
-        start = sum(self.layers_cardinalities[0:layer])
-        for i in range(start, len(self.nodes_ordered)):
-            self.nodes_ordered[i].layer += 1
+        if connection_right.to_node.layer - connection_left.from_node.layer == 1:
+            self.layers_cardinalities.insert(layer, 1)
+            start = sum(self.layers_cardinalities[0:layer])
+            for i in range(start, len(self.nodes_ordered)):
+                self.nodes_ordered[i].layer += 1
+        else:
+            self.layers_cardinalities[layer] += 1
 
         self.nodes_ordered.append(node)
         self.prepare_nodes()
-
