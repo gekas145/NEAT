@@ -1,6 +1,7 @@
 from Node import Node
 from Connection import Connection
-from random import uniform
+from random import uniform, sample
+from numpy.random import normal
 
 
 class NeuralNetwork:
@@ -118,3 +119,7 @@ class NeuralNetwork:
 
         self.nodes_ordered.append(node)
         self.prepare_nodes()
+
+    def mutate_weight(self):
+        connection = sample(self.connections, 1)[0]
+        connection.weight += normal(0, 1)
