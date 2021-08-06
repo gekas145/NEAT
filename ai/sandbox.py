@@ -1,9 +1,10 @@
 import copy
+import random
 
 from Node import Node
 from Connection import Connection
 from NeuralNetwork import NeuralNetwork as nn
-from random import uniform
+from random import uniform, sample
 
 net = nn(3, 2)
 
@@ -17,13 +18,22 @@ node2 = Node(2, 1)
 
 a = [node, node1, node2]
 
-print(a)
+# print(a)
 
-b = copy.deepcopy(a)
+# b = copy.deepcopy(a)
 
-print(b)
+# print(b)
+# print("node", node)
+# print("node1", node1)
+# node, node1 = node1, node
+# print("node", node)
+# print("node1", node1)
 
-a = [1, 2, 3, 4]
-# a.insert(1, 4)
-print(a[0:2])
-print(a)
+
+def alter_id(node):
+    node.id += 1
+
+
+print(node)
+alter_id(node)
+print(node)

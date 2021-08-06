@@ -1,4 +1,6 @@
 from NeuralNetwork import NeuralNetwork
+from random import sample, uniform
+from Connection import Connection
 
 
 class Population:
@@ -14,10 +16,34 @@ class Population:
     def check_innovation_num(self, conn):
         for connection in self.connections_history:
             if connection.from_node.id == conn.from_node.id and \
-                    connection.to_node.id == conn.from_node.id:
+                    connection.to_node.id == conn.to_node.id:
                 return connection.innovation_number
 
         return None
 
-    def add_connection(self):
+    def check_connection(self, connection):
+        innov = self.check_innovation_num(connection)
+        if innov is not None:
+            connection.innovation_number = innov
+        else:
+            connection.innovation_number = self.next_innovation_num
+            self.next_innovation_num += 1
+            self.connections_history.append(connection)
+
+    def add_connection(self, net):
+        if net.is_fully_connected():
+            return
+
+        node1, node2 = sample(net.nodes, 2)
+        while not net.check_nodes(node1, node2, False):
+            node1, node2 = sample(net.nodes, 2)
+
+        if node1.layer > node2.layer:
+            node1, node2 = node2, node1
+
+        connection = Connection(node1, node2, uniform(0, 1))
+        self.check_connection(connection)
+        net.add_connection(connection)
+
+    def add_node(self):
         pass
