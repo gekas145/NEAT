@@ -1,3 +1,5 @@
+import pygame
+
 from Node import Node
 from Connection import Connection
 from random import uniform, sample
@@ -123,3 +125,55 @@ class NeuralNetwork:
     def mutate_weight(self):
         connection = sample(self.connections, 1)[0]
         connection.weight += normal(0, 1)
+
+    def crossover(self, net):
+        # call on more fit parent
+        pass
+
+    def draw(self):
+        (width, height) = (650, 650)
+        white = (255, 255, 255)
+        black = (0, 0, 0)
+        blue = (0, 0, 255)
+        red = (255, 0, 0)
+
+        pygame.init()
+        screen = pygame.display.set_mode((width, height))
+        screen.fill(white)
+
+        x = 50
+        y = 30
+        prev = 0
+        prev_layer = 0
+        circles = []
+        for node in self.nodes_ordered:
+            if node.layer > prev:
+                prev = node.layer
+                if self.layers_cardinalities[prev_layer] >= self.layers_cardinalities[prev_layer + 1]:
+                    x += 70
+                    y = 60
+                else:
+                    x += 70
+                    y = 0
+                prev_layer += 1
+            y += 80
+            pygame.draw.circle(screen, black, [x, y], 10)
+            circles.append([x, y])
+
+        for i in range(len(self.nodes_ordered)):
+            for conn in self.nodes_ordered[i].connections:
+                j = self.nodes_ordered.index(conn.to_node)
+                if conn.enabled:
+                    if conn.weight > 0:
+                        color = red
+                    else:
+                        color = blue
+                    pygame.draw.line(screen, color, circles[i], circles[j], round(abs(conn.weight) * 10))
+
+        pygame.display.update()
+
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
