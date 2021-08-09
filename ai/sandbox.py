@@ -45,11 +45,16 @@ net1 = population.organisms[1]
 #     population.add_connection(net1)
 # print(net1.is_fully_connected())
 
-for i in range(3):
+for i in range(2):
     population.add_node(net)
-
-for i in range(3):
-    population.add_connection(net)
-
+population.add_connection(net)
+for node in net.nodes_ordered:
+    print("Node", node.id, ":")
+    for conn in node.connections:
+        print("Weight:", round(conn.weight, 2), "|| Enabled:", conn.enabled, "|| To:", conn.to_node)
+    print("-----------------------")
+inp = [0.5, 0.43, 1]
+print("Feedforward of", inp, "is", net.feedforward(inp))
 net.draw()
 
+net2 = nn(0, 0)

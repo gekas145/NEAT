@@ -1,5 +1,5 @@
 import pygame
-
+import copy
 from Node import Node
 from Connection import Connection
 from random import uniform, sample
@@ -48,6 +48,7 @@ class NeuralNetwork:
         self.nodes_ordered.sort(key=lambda x: x.layer)
 
     def prepare_connections(self):
+        # call to prepare for crossover
         self.connections.sort(key=lambda x: x.innovation_number)
 
     def is_fully_connected(self):
@@ -128,7 +129,41 @@ class NeuralNetwork:
 
     def crossover(self, net):
         # call on more fit parent
-        pass
+        self.prepare_connections()
+        net.prepare_connection()
+
+        child = NeuralNetwork(0, 0)
+        child.layers_cardinalities = self.layers_cardinalities.copy()
+        child.nodes = copy.deepcopy(self.nodes)
+
+        this = copy.deepcopy(self.connections)
+        that = copy.deepcopy(net.connections)
+
+        this_conn = None
+        that_conn = None
+
+        while len(that) != 0 or this_conn is not None:
+            if this_conn is None:
+                this_conn = this.pop(0)
+
+            if that_conn is None and len(that) != 0:
+                that_conn = that.pop(0)
+
+            if that_conn is None:
+                connection = Connection(child.nodes[this_conn.from_node.id],
+                                        child.nodes[this_conn.to_node.id],
+                                        this_conn.weight,
+                                        this_conn.innovation_number)
+                child.add_connection(connection)
+            elif this_conn.innovation_number > that_conn.innovation_number:
+                that_conn = None
+            elif this_conn.innovation_number == that_conn.innovation_number:
+                continue
+            else:
+                continue
+
+
+
 
     def draw(self):
         (width, height) = (650, 650)
