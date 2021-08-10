@@ -48,13 +48,22 @@ net1 = population.organisms[1]
 for i in range(2):
     population.add_node(net)
 population.add_connection(net)
-for node in net.nodes_ordered:
-    print("Node", node.id, ":")
-    for conn in node.connections:
-        print("Weight:", round(conn.weight, 2), "|| Enabled:", conn.enabled, "|| To:", conn.to_node)
-    print("-----------------------")
-inp = [0.5, 0.43, 1]
-print("Feedforward of", inp, "is", net.feedforward(inp))
+# for node in net.nodes_ordered:
+#     print("Node", node.id, ":")
+#     for conn in node.connections:
+#         print("Weight:", round(conn.weight, 2), "|| Enabled:", conn.enabled, "|| To:", conn.to_node)
+#     print("-----------------------")
+# inp = [0.5, 0.43, 1]
+# print("Feedforward of", inp, "is", net.feedforward(inp))
 net.draw()
 
-net2 = nn(0, 0)
+for i in range(1):
+    population.add_node(net1)
+
+net1.draw()
+
+net2 = net.crossover(net1)
+
+net2.draw()
+
+print(len(population.connections_history))

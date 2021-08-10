@@ -130,7 +130,7 @@ class NeuralNetwork:
     def crossover(self, net):
         # call on more fit parent
         self.prepare_connections()
-        net.prepare_connection()
+        net.prepare_connections()
 
         child = NeuralNetwork(0, 0)
         child.layers_cardinalities = self.layers_cardinalities.copy()
@@ -142,7 +142,7 @@ class NeuralNetwork:
         this_conn = None
         that_conn = None
 
-        while len(that) != 0 or this_conn is not None:
+        while len(this) != 0 or this_conn is not None:
             if this_conn is None:
                 this_conn = this.pop(0)
 
@@ -155,15 +155,50 @@ class NeuralNetwork:
                                         this_conn.weight,
                                         this_conn.innovation_number)
                 child.add_connection(connection)
+
+                this_conn = None
             elif this_conn.innovation_number > that_conn.innovation_number:
                 that_conn = None
             elif this_conn.innovation_number == that_conn.innovation_number:
-                continue
+                if uniform(0, 1) < 0.5:
+                    conn = that_conn
+                else:
+                    conn = this_conn
+
+                connection = Connection(child.nodes[conn.from_node.id],
+                                        child.nodes[conn.to_node.id],
+                                        conn.weight,
+                                        conn.innovation_number)
+
+                if not this_conn.enabled or not that_conn.enabled:
+                    if uniform(0, 1) < 0.75:
+                        connection.enabled = False
+
+                child.add_connection(connection)
+
+                this_conn = None
+                that_conn = None
+
             else:
-                continue
+                connection = Connection(child.nodes[this_conn.from_node.id],
+                                        child.nodes[this_conn.to_node.id],
+                                        this_conn.weight,
+                                        this_conn.innovation_number)
+                child.add_connection(connection)
 
+                this_conn = None
 
+        child.next_node_id = self.next_node_id
+        child.nodes_ordered = child.nodes.copy()
+        child.prepare_nodes()
 
+        for node in self.input_nodes:
+            child.input_nodes.append(child.nodes[node.id])
+
+        for node in self.output_nodes:
+            child.output_nodes.append(child.nodes[node.id])
+
+        return child
 
     def draw(self):
         (width, height) = (650, 650)
