@@ -10,14 +10,16 @@ class NeuralNetwork:
     def __init__(self, inputs_num, outputs_num):
 
         self.connections = []  # sorted by innovation number
-        self.nodes = []  # sorted by id
+        self.bias_node = Node(0, 0)
+        self.bias_node.output_val = 1
+        self.nodes = [self.bias_node]  # sorted by id
         self.nodes_ordered = []  # sorted by layers
-        self.layers_cardinalities = [inputs_num, outputs_num]
-        self.next_node_id = inputs_num + outputs_num
-        self.input_nodes = []
+        self.layers_cardinalities = [inputs_num + 1, outputs_num]
+        self.next_node_id = inputs_num + 1 + outputs_num
+        self.input_nodes = [self.bias_node]
         self.output_nodes = []
 
-        id_num = 0
+        id_num = 1
         for i in range(inputs_num):
             node = Node(id_num, 0)
             self.nodes.append(node)
@@ -31,11 +33,17 @@ class NeuralNetwork:
             id_num += 1
 
         innov = 0
-        for i in range(inputs_num):
+        for i in range(inputs_num+1):
             for j in range(outputs_num):
+
+                if self.nodes[i].id != 0:
+                    weight = uniform(-1, 1)
+                else:
+                    weight = 0
+
                 connection = Connection(self.nodes[i],
-                                        self.nodes[inputs_num + j],
-                                        uniform(0, 1),
+                                        self.nodes[inputs_num + 1 + j],
+                                        weight,
                                         innov)
                 self.connections.append(connection)
                 self.nodes[i].connections.append(connection)
@@ -64,7 +72,7 @@ class NeuralNetwork:
 
     def feedforward(self, inputs):
         for i in range(len(inputs)):
-            self.input_nodes[i].output_val = inputs[i]
+            self.input_nodes[i + 1].output_val = inputs[i]
 
         for node in self.nodes_ordered:
             if node.layer != 0:
@@ -85,6 +93,9 @@ class NeuralNetwork:
     def check_nodes(self, node1, node2, criterion):
         # criterion - bool, True if used before add_node, False if before add_connection
         if node1.layer == node2.layer:
+            return False
+
+        if node1.id == 0 or node2.id == 0:
             return False
 
         for connection in self.connections:
@@ -134,7 +145,9 @@ class NeuralNetwork:
 
         child = NeuralNetwork(0, 0)
         child.layers_cardinalities = self.layers_cardinalities.copy()
-        child.nodes = copy.deepcopy(self.nodes)
+        for i in range(1, len(self.nodes)):
+            node = self.nodes[i].copy()
+            child.nodes.append(node)
 
         this = copy.deepcopy(self.connections)
         that = copy.deepcopy(net.connections)
@@ -179,7 +192,7 @@ class NeuralNetwork:
                 this_conn = None
                 that_conn = None
 
-            else:
+            elif this_conn.innovation_number < that_conn.innovation_number:
                 connection = Connection(child.nodes[this_conn.from_node.id],
                                         child.nodes[this_conn.to_node.id],
                                         this_conn.weight,
@@ -189,6 +202,7 @@ class NeuralNetwork:
                 this_conn = None
 
         child.next_node_id = self.next_node_id
+        child.bias_node = child.nodes[0]
         child.nodes_ordered = child.nodes.copy()
         child.prepare_nodes()
 
@@ -238,7 +252,7 @@ class NeuralNetwork:
                         color = red
                     else:
                         color = blue
-                    pygame.draw.line(screen, color, circles[i], circles[j], round(abs(conn.weight) * 10))
+                    pygame.draw.line(screen, color, circles[i], circles[j], round(abs(conn.weight) * 10 + 2))
 
         pygame.display.update()
 

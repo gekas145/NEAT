@@ -68,3 +68,8 @@ class Population:
         self.check_connection(connection2)
 
         net.add_node(connection1, connection2)
+
+        connection3 = Connection(net.bias_node, node, 0)
+        self.check_connection(connection3)
+
+        net.add_connection(connection3)
