@@ -70,5 +70,6 @@ net2 = net.crossover(net1)
 # print(net2.nodes[3].output_sum)
 net2.draw()
 population.add_node(net2)
+
 population.add_connection(net2)
 net2.draw()
