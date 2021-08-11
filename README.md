@@ -1,2 +1,1 @@
-# Pacman
-Pacman game played by neural network.
+#  NeuroEvolution of Augmenting Topologies(NEAT)
