@@ -19,6 +19,8 @@ class NeuralNetwork:
         self.next_node_id = inputs_num + 1 + outputs_num
         self.input_nodes = [self.bias_node]
         self.output_nodes = []
+        self.fitness = 0.0
+        self.species = 0  # will store species list number
 
         id_num = 1
         for i in range(inputs_num):
@@ -34,7 +36,7 @@ class NeuralNetwork:
             id_num += 1
 
         innov = 0
-        for i in range(inputs_num+1):
+        for i in range(inputs_num + 1):
             for j in range(outputs_num):
 
                 if self.nodes[i].id != 0:
@@ -269,4 +271,3 @@ class NeuralNetwork:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-
