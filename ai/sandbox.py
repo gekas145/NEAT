@@ -45,7 +45,7 @@ net1 = population.organisms[1]
 #     population.add_connection(net1)
 # print(net1.is_fully_connected())
 
-for i in range(2):
+for i in range(3):
     population.add_node(net)
 population.add_connection(net)
 net.draw()

@@ -4,6 +4,7 @@ from Node import Node
 from Connection import Connection
 from random import uniform, sample
 from numpy.random import normal
+import config as c
 
 
 class NeuralNetwork:
@@ -115,6 +116,7 @@ class NeuralNetwork:
             if connection.from_node.id == connection_left.from_node.id and \
                     connection.to_node.id == connection_right.to_node.id:
                 connection.enabled = False
+                connection_right.weight = connection.weight
                 break
 
         node = connection_left.to_node
@@ -173,7 +175,7 @@ class NeuralNetwork:
             elif this_conn.innovation_number > that_conn.innovation_number:
                 that_conn = None
             elif this_conn.innovation_number == that_conn.innovation_number:
-                if uniform(0, 1) < 0.5:
+                if uniform(0, 1) < c.CHOOSE_ANOTHER_GENE_PROBABILITY:
                     conn = that_conn
                 else:
                     conn = this_conn
@@ -184,7 +186,7 @@ class NeuralNetwork:
                                         conn.innovation_number)
 
                 if not this_conn.enabled or not that_conn.enabled:
-                    if uniform(0, 1) < 0.75:
+                    if uniform(0, 1) < c.DISABLE_GENE_PROBABILITY:
                         connection.enabled = False
 
                 child.add_connection(connection)
@@ -213,6 +215,10 @@ class NeuralNetwork:
             child.output_nodes.append(child.nodes[node.id])
 
         return child
+
+    def difference(self, net):
+        # returns measure of difference between `self` and `net` for speciation
+        pass
 
     def draw(self):
         (width, height) = (650, 650)
@@ -250,8 +256,10 @@ class NeuralNetwork:
                 if conn.enabled:
                     if conn.weight > 0:
                         color = red
-                    else:
+                    elif conn.weight < 0:
                         color = blue
+                    else:
+                        color = black
                     pygame.draw.line(screen, color, circles[i], circles[j], round(abs(conn.weight) * 10 + 2))
 
         pygame.display.update()

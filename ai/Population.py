@@ -61,10 +61,10 @@ class Population:
             node = Node(net.next_node_id, randint(node1.layer + 1, node2.layer - 1))
         net.next_node_id += 1
 
-        connection1 = Connection(node1, node, uniform(-1, 1))
+        connection1 = Connection(node1, node, 1)
         self.check_connection(connection1)
 
-        connection2 = Connection(node, node2, uniform(-1, 1))
+        connection2 = Connection(node, node2, None)  # will be later changed to weight between node1 and node2
         self.check_connection(connection2)
 
         net.add_node(connection1, connection2)
@@ -74,3 +74,5 @@ class Population:
 
         net.add_connection(connection3)
 
+    def create_species(self):
+        pass
