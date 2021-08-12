@@ -6,7 +6,7 @@ from Connection import Connection
 from NeuralNetwork import NeuralNetwork as nn
 from random import uniform, sample
 
-from ai.Population import Population
+from neat.Population import Population
 
 # net = nn(3, 2)
 node = Node(0, 0)
