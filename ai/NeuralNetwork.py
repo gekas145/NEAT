@@ -218,9 +218,53 @@ class NeuralNetwork:
 
         return child
 
-    def difference(self, net):
+    def get_difference(self, net):
         # returns measure of difference between `self` and `net` for speciation
-        pass
+        E = 0  # number of excess genes
+        D = 0  # number of disjoint genes
+        W = 0.0  # sum of weights diffs(to calculate the average diff)
+        maximum = max(len(self.connections), len(net.connections))
+        if maximum > c.MIN_GENOME_LENGTH:
+            N = maximum  # length of bigger genome(1 if it's smaller than XXX)
+        else:
+            N = 1
+        joint_num = 0  # number of joint genes(to calculate the average diff)
+
+        self.prepare_connections()
+        net.prepare_connections()
+
+        this = copy.deepcopy(self.connections)
+        that = copy.deepcopy(net.connections)
+        this_conn = None
+        that_conn = None
+
+        while len(this) != 0 and len(that) != 0:
+            if this_conn is None:
+                this_conn = this.pop(0)
+            if that_conn is None:
+                that_conn = that.pop(0)
+
+            if this_conn.innovation_number > that_conn.innovation_number:
+                D += 1
+                that_conn = None
+            elif this_conn.innovation_number == that_conn.innovation_number:
+                joint_num += 1
+                W += abs(this_conn.weight - that_conn.weight)
+                that_conn = None
+                this_conn = None
+            else:
+                D += 1
+                this_conn = None
+
+        E += len(this) + len(that)
+
+        if this_conn is not None or that_conn is not None:
+            E += 1
+
+        if joint_num != 0:
+            W /= joint_num
+
+        return c.EXCESS_GENE_COEFF * E / N + c.DISJOINT_GENE_COEFF * D / N + c.AVERAGE_WEIGHT_DIFF_COEFF * W
 
     def draw(self):
         (width, height) = (650, 650)

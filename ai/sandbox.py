@@ -69,7 +69,10 @@ net2 = net.crossover(net1)
 # population.add_node(net2)
 # print(net2.nodes[3].output_sum)
 net2.draw()
-population.add_node(net2)
+for i in range(10):
+    population.add_node(net2)
 
 population.add_connection(net2)
 net2.draw()
+
+print(net.get_difference(net2))
