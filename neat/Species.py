@@ -1,3 +1,7 @@
+import config as c
+from random import uniform, sample
+
+
 class Species:
 
     def __init__(self, representative):
@@ -14,3 +18,14 @@ class Species:
 
         self.shared_fitness /= len(self.organisms)
 
+    def get_offspring(self):
+        if uniform(0, 1) < c.CROSSOVER_PROBABILITY:
+
+            parent1, parent2 = sample(self.organisms, 2)
+            if parent2.fitness > parent1.fitness:
+                parent1, parent2 = parent2, parent1
+
+            child = parent1.crossover(parent2)
+
+        else:
+            pass

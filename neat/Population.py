@@ -100,8 +100,5 @@ class Population:
     def natural_selection(self):
         pass
 
-    def get_offspring(self):
-        pass
-
     def create_next_generation(self):
         pass
