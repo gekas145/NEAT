@@ -2,6 +2,8 @@ from NeuralNetwork import NeuralNetwork
 from random import sample, uniform, randint
 from Connection import Connection
 from Node import Node
+from Species import Species
+import config as c
 
 
 class Population:
@@ -30,6 +32,12 @@ class Population:
             connection.innovation_number = self.next_innovation_num
             self.next_innovation_num += 1
             self.connections_history.append(connection)
+
+    def prepare_species(self):
+        for species in self.species:
+            species.organisms.sort(key=lambda x: x.fitness)
+
+        self.species.sort(key=lambda x: x.shared_fitness)
 
     def add_connection(self, net):
         if net.is_fully_connected():
@@ -75,4 +83,25 @@ class Population:
         net.add_connection(connection3)
 
     def create_species(self):
+        for organism in self.organisms:
+            added = False
+            for species in self.species:
+                if species.representative.get_difference(organism) < c.COMPATIBILITY_THRESHOLD:
+                    species.organisms.append(organism)
+                    added = True
+                    break
+
+            if not added:
+                self.species.append(Species(organism))
+
+        for species in self.species:
+            species.calculate_shared_fitness()
+
+    def natural_selection(self):
+        pass
+
+    def get_offspring(self):
+        pass
+
+    def create_next_generation(self):
         pass
