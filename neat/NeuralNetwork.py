@@ -62,6 +62,36 @@ class NeuralNetwork:
         # call to prepare for crossover
         self.connections.sort(key=lambda x: x.innovation_number)
 
+    def copy(self):
+
+        copied = NeuralNetwork(0, 0)
+        copied.layers_cardinalities = self.layers_cardinalities.copy()
+
+        for i in range(1, len(self.nodes)):
+            node = self.nodes[i].copy()
+            copied.nodes.append(node)
+
+        for conn in self.connections:
+            connection = Connection(copied.nodes[conn.from_node.id],
+                                    copied.nodes[conn.to_node.id],
+                                    conn.weight,
+                                    conn.innovation_number)
+            connection.enabled = conn.enabled
+            copied.add_connection(connection)
+
+        copied.next_node_id = self.next_node_id
+        copied.bias_node = copied.nodes[0]
+        copied.nodes_ordered = copied.nodes.copy()
+        copied.prepare_nodes()
+
+        for node in self.input_nodes:
+            copied.input_nodes.append(copied.nodes[node.id])
+
+        for node in self.output_nodes:
+            copied.output_nodes.append(copied.nodes[node.id])
+
+        return copied
+
     def is_fully_connected(self):
         connections_num = 0
         length = len(self.layers_cardinalities)
@@ -171,6 +201,11 @@ class NeuralNetwork:
                                         child.nodes[this_conn.to_node.id],
                                         this_conn.weight,
                                         this_conn.innovation_number)
+
+                if not this_conn.enabled:
+                    if uniform(0, 1) < c.DISABLE_GENE_PROBABILITY:
+                        connection.enabled = False
+
                 child.add_connection(connection)
 
                 this_conn = None

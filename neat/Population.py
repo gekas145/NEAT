@@ -39,6 +39,9 @@ class Population:
 
         self.species.sort(key=lambda x: x.shared_fitness)
 
+    def erase_species(self):
+        pass
+
     def add_connection(self, net):
         if net.is_fully_connected():
             print("failed")
@@ -89,16 +92,38 @@ class Population:
                 if species.representative.get_difference(organism) < c.COMPATIBILITY_THRESHOLD:
                     species.organisms.append(organism)
                     added = True
+
+                    if organism.fitness > species.top_fitness_representative.fitness:
+                        species.top_fitness_representative = organism.copy()
+
                     break
 
             if not added:
                 self.species.append(Species(organism))
 
         for species in self.species:
-            species.calculate_shared_fitness()
+            species.prepare()
 
     def natural_selection(self):
-        pass
+        to_delete = []
+
+        for i in range(len(self.species)):
+
+            self.organisms.append(self.species[i].organisms.pop(0))  # add best of each species without mutations
+
+            if self.species[i].top_fitness_representative.fitness > self.species[i].previous_top_fitness:
+                self.species[i].previous_top_fitness = self.species[i].top_fitness_representative.fitness
+                self.species[i].staleness = 0
+            else:
+                self.species[i].staleness += 1
+
+            if self.species[i].staleness == c.MAX_STALENESS:
+                to_delete.append(i)
+            else:  # delete bottom half
+                self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2]
+
+        for index in to_delete:
+            del self.species[index]
 
     def create_next_generation(self):
         pass
