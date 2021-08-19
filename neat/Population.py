@@ -9,7 +9,6 @@ from math import floor
 
 class Population:
     def __init__(self, n, inputs_num, outputs_num):
-        self.n = n
         self.connections_history = []
         self.organisms = []
         self.next_innovation_num = inputs_num * outputs_num
@@ -131,16 +130,20 @@ class Population:
         self.prepare_species()
 
     def create_next_generation(self):
+        n = len(self.organisms)
         self.organisms.clear()
         average_sum = 0.0
         for species in self.species:
             average_sum += species.average_fitness
 
         for species in self.species:
-            children_num = floor(species.average_fitness/average_sum * self.n) - 1
+            children_num = floor(species.average_fitness/average_sum * n) - 1
 
             for i in range(children_num):
-                species.get_offspring(self)
+                species.add_offspring(self)
+
+        while len(self.organisms) < n:
+            self.species[0].add_offspring(self)
 
         self.erase_species()
 
