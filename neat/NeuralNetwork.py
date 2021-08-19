@@ -20,6 +20,7 @@ class NeuralNetwork:
         self.input_nodes = [self.bias_node]
         self.output_nodes = []
         self.fitness = 0.0
+        self.shared_fitness = 0.0
         # self.species = 0  # will store species list number
 
         id_num = 1

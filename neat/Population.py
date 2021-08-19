@@ -4,10 +4,12 @@ from Connection import Connection
 from Node import Node
 from Species import Species
 import config as c
+from math import floor
 
 
 class Population:
     def __init__(self, n, inputs_num, outputs_num):
+        self.n = n
         self.connections_history = []
         self.organisms = []
         self.next_innovation_num = inputs_num * outputs_num
@@ -35,12 +37,13 @@ class Population:
 
     def prepare_species(self):
         for species in self.species:
-            species.organisms.sort(key=lambda x: x.fitness)
+            species.calculate_average_fitness()
 
-        self.species.sort(key=lambda x: x.shared_fitness)
+        self.species.sort(key=lambda x: x.average_fitness)
 
     def erase_species(self):
-        pass
+        for species in self.species:
+            species.organisms.clear()
 
     def add_connection(self, net):
         if net.is_fully_connected():
@@ -93,37 +96,51 @@ class Population:
                     species.organisms.append(organism)
                     added = True
 
-                    if organism.fitness > species.top_fitness_representative.fitness:
-                        species.top_fitness_representative = organism.copy()
+                    if organism.fitness > species.representative.fitness:
+                        species.representative = organism.copy()
 
                     break
 
             if not added:
                 self.species.append(Species(organism))
 
-        for species in self.species:
-            species.prepare()
-
     def natural_selection(self):
         to_delete = []
 
         for i in range(len(self.species)):
 
+            self.species[i].prepare()
+
             self.organisms.append(self.species[i].organisms.pop(0))  # add best of each species without mutations
 
-            if self.species[i].top_fitness_representative.fitness > self.species[i].previous_top_fitness:
-                self.species[i].previous_top_fitness = self.species[i].top_fitness_representative.fitness
+            if self.species[i].representative.fitness > self.species[i].previous_top_fitness:
+                self.species[i].previous_top_fitness = self.species[i].representative.fitness
                 self.species[i].staleness = 0
             else:
                 self.species[i].staleness += 1
 
             if self.species[i].staleness == c.MAX_STALENESS:
                 to_delete.append(i)
-            else:  # delete bottom half
+            else:  # delete the bottom half
                 self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2]
+                self.species[i].calculate_average_fitness()
 
         for index in to_delete:
             del self.species[index]
 
+        self.prepare_species()
+
     def create_next_generation(self):
-        pass
+        self.organisms.clear()
+        average_sum = 0.0
+        for species in self.species:
+            average_sum += species.average_fitness
+
+        for species in self.species:
+            children_num = floor(species.average_fitness/average_sum * self.n) - 1
+
+            for i in range(children_num):
+                species.get_offspring(self)
+
+        self.erase_species()
+

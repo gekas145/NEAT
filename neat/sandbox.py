@@ -27,5 +27,3 @@ net2 = net.crossover(net1)
 
 net2.draw()
 
-
-

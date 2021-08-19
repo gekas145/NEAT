@@ -7,19 +7,26 @@ class Species:
     def __init__(self, organism):
         self.representative = organism.copy()
         self.organisms = [organism]
-        self.shared_fitness = 0.0
-        self.top_fitness_representative = organism.copy()
+        self.average_fitness = 0.0
         self.previous_top_fitness = 0.0
         self.staleness = 0
 
-    def prepare(self):
-        self.previous_top_fitness = self.top_fitness_representative.fitness
+    def fitness_sharing(self):
         for organism in self.organisms:
-            self.shared_fitness += organism.fitness
-            if organism.fitness > self.top_fitness_representative.fitness:
-                self.top_fitness_representative = organism.copy()
+            organism.shared_fitness = organism.fitness / len(self.organisms)
 
-        self.shared_fitness /= len(self.organisms)
+    def calculate_average_fitness(self):
+        self.fitness_sharing()
+        self.average_fitness = 0.0
+        for organism in self.organisms:
+            self.average_fitness += organism.shared_fitness
+
+        self.average_fitness /= len(self.organisms)
+
+    def prepare(self):
+        self.calculate_average_fitness()
+        self.organisms.sort(key=lambda x: x.fitness)
+        self.representative = self.organisms[0].copy()
 
     def get_offspring(self, population):
         if uniform(0, 1) < c.CROSSOVER_PROBABILITY:
