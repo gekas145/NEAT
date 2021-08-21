@@ -21,6 +21,7 @@ class Species:
         for organism in self.organisms:
             self.average_fitness += organism.shared_fitness
 
+        # print(len(self.organisms))
         self.average_fitness /= len(self.organisms)
 
     def prepare(self):
@@ -28,23 +29,3 @@ class Species:
         self.organisms.sort(key=lambda x: x.fitness)
         self.representative = self.organisms[0].copy()
 
-    def get_offspring(self, population):
-        if uniform(0, 1) < c.CROSSOVER_PROBABILITY:
-
-            parent1, parent2 = sample(self.organisms, 2)
-            if parent2.fitness > parent1.fitness:
-                parent1, parent2 = parent2, parent1
-
-            child = parent1.crossover(parent2)
-
-        else:
-            child = sample(self.organisms, 1)[0].copy()
-
-        if uniform(0, 1) < c.ADD_CONNECTION_PROBABILITY:
-            population.add_connection(child)
-        if uniform(0, 1) < c.ADD_NODE_PROBABILITY:
-            population.add_node(child)
-        if uniform(0, 1) < c.MUTATE_WEIGHT_PROBABILITY:
-            child.mutate_weight()
-
-        population.organisms.append(child)
