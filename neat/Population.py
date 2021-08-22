@@ -106,11 +106,15 @@ class Population:
                 self.species.append(Species(organism))
 
     def natural_selection(self):
-        to_delete = np.array([], dtype='i')
+        to_delete = []
 
         for i in range(len(self.species)):
 
-            self.species[i].prepare()
+            if len(self.species[i].organisms) == 0:
+                to_delete.append(i)
+                continue
+            else:
+                self.species[i].prepare()
 
             if self.species[i].representative.fitness > self.species[i].previous_top_fitness:
                 self.species[i].previous_top_fitness = self.species[i].representative.fitness
@@ -118,16 +122,16 @@ class Population:
             else:
                 self.species[i].staleness += 1
 
-            if self.species[i].staleness == c.MAX_STALENESS or len(self.species[i].organisms) <= 1:
-                to_delete = np.append(to_delete, i)
+            if self.species[i].staleness == c.MAX_STALENESS:
+                to_delete.append(i)
             else:  # delete the bottom half
-                self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2]
+                self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2 + 1]
                 self.species[i].calculate_average_fitness()
 
-        for i in range(len(to_delete)):
-            del self.species[to_delete[i]]
-            if i < len(to_delete) - 1:
-                to_delete[i+1:len(to_delete)] -= 1
+        for i in range(len(to_delete) - 1, -1, -1):
+            self.species.pop(to_delete[i])
+            # if i < len(to_delete) - 1:
+            #     to_delete[i+1:len(to_delete)] -= 1
 
         self.prepare_species()
 
