@@ -171,7 +171,16 @@ class NeuralNetwork:
 
     def mutate_weight(self):
         connection = sample(self.connections, 1)[0]
-        connection.weight += normal(0, 1)
+
+        if uniform(0, 1) < c.RESET_WEIGHT_PROBABILITY:
+            connection.weight = uniform(-1, 1)
+        else:
+            connection.weight += normal(0, 1) / 50
+            if connection.weight > 1:
+                connection.weight = 1
+            elif connection.weight < -1:
+                connection.weight = -1
+
 
     def crossover(self, net):
         # call on more fit parent

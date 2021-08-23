@@ -97,8 +97,8 @@ class Population:
                     species.organisms.append(organism)
                     added = True
 
-                    if organism.fitness > species.representative.fitness:
-                        species.representative = organism.copy()
+                    # if organism.fitness > species.representative.fitness:
+                    #     species.representative = organism.copy()
 
                     break
 
