@@ -175,10 +175,10 @@ class NeuralNetwork:
             connection.weight = uniform(-1, 1)
         else:
             connection.weight += normal(0, 1) / 3
-            if connection.weight > 1:
-                connection.weight = 1
-            elif connection.weight < -1:
-                connection.weight = -1
+            # if connection.weight > 1:
+            #     connection.weight = 1
+            # elif connection.weight < -1:
+            #     connection.weight = -1
 
     def crossover(self, net):
         # call on more fit parent

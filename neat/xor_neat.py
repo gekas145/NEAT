@@ -1,3 +1,5 @@
+import math
+
 from Population import Population
 from numpy.random import binomial as bin
 from random import uniform
@@ -21,7 +23,7 @@ def evaluate_log_and(organism):
             if a == 0 or b == 0:
                 organism.fitness += abs(output_val - log_and(a, b))
             else:
-                organism.fitness += abs(output_val - log_and(a, b))*2.5
+                organism.fitness += abs(output_val - log_and(a, b)) * 2
 
 
 def evaluate_xor(organism):
@@ -38,8 +40,8 @@ def simple_evaluate(organism):
 
 
 def main():
-    n = 50
-    epochs = 50
+    n = 100
+    epochs = 200
     population = Population(n, 2, 1)
 
     # for i in range(1):
@@ -49,12 +51,12 @@ def main():
     #     print(population.organisms[i].feedforward([1, 0]))
     #     print("-----------------------")
 
-    # count = 0
-    # for organism in population.organisms:
-    #     population.add_node(organism)
-    #     if count % 2 == 0:
-    #         population.add_node(organism)
-    #     count += 1
+    count = 0
+    for organism in population.organisms:
+        population.add_node(organism)
+        if count % 6 == 0:
+            population.add_node(organism)
+        count += 1
 
     for i in range(epochs):
         for organism in population.organisms:
@@ -67,6 +69,9 @@ def main():
         # print("----------------------")
 
         population.create_species()
+        # for species in population.species:
+        #     print(len(species.organisms))
+        # print("-----------------")
 
         population.natural_selection()
 
@@ -95,6 +100,8 @@ def main():
     # print(population.species[0].representative.feedforward([0, 1, 0]))
     print("FITNESS:", population.champion.fitness)
     population.champion.draw()
+    print(population.champion.input_nodes)
+    print(population.champion)
 
 
 if __name__ == "__main__":
