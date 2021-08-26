@@ -194,5 +194,5 @@ class Population:
                 self.champion.fitness = organism.fitness
                 updated = True
 
-        if updated:
-            print("CHAMPION UPDATED")
+        # if updated:
+        #     print("CHAMPION UPDATED")

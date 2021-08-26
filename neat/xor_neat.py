@@ -1,5 +1,7 @@
 import math
 
+import numpy as np
+from matplotlib import pyplot as plt
 from Population import Population
 from numpy.random import binomial as bin
 from random import uniform
@@ -39,17 +41,14 @@ def simple_evaluate(organism):
     organism.fitness += abs(output_val - xor(a, b)) * 100
 
 
+
 def main():
+    average_fitness = []
+    champion_fitness = []
+
     n = 100
     epochs = 200
     population = Population(n, 2, 1)
-
-    # for i in range(1):
-    #     print(population.organisms[i].feedforward([0, 0]))
-    #     print(population.organisms[i].feedforward([1, 1]))
-    #     print(population.organisms[i].feedforward([0, 1]))
-    #     print(population.organisms[i].feedforward([1, 0]))
-    #     print("-----------------------")
 
     count = 0
     for organism in population.organisms:
@@ -59,27 +58,22 @@ def main():
         count += 1
 
     for i in range(epochs):
+        avg = 0.0
         for organism in population.organisms:
             evaluate_log_and(organism)
+            avg += organism.fitness
+        average_fitness.append(avg/len(population.organisms))
 
         population.update_champion()
-
-        # for i in range(10):
-        #     print(round(population.organisms[i].fitness, 2))
-        # print("----------------------")
+        champion_fitness.append(population.champion.fitness)
 
         population.create_species()
-        # for species in population.species:
-        #     print(len(species.organisms))
-        # print("-----------------")
 
         population.natural_selection()
 
         population.create_next_generation()
-        # print(len(population.organisms))
-
-        # if len(population.organisms) != 90:
-        #     print(len(population.organisms))
+        for organism in population.organisms:
+            organism.fitness = 0.0
 
         population.connections_history.clear()
 
@@ -87,21 +81,23 @@ def main():
     for organism in population.organisms:
         evaluate_log_and(organism)
     population.update_champion()
-    # for i in range(10):
-    #     print(population.organisms[i].feedforward([1, 1]))
-    #     print(population.organisms[i].feedforward([1, 0]))
-    #     print("-----------------------")
 
     print(population.champion.feedforward([0, 0]))
     print(population.champion.feedforward([1, 1]))
     print(population.champion.feedforward([0, 1]))
     print(population.champion.feedforward([1, 0]))
-    # print(population.species[0].representative.feedforward([1, 0]))
-    # print(population.species[0].representative.feedforward([0, 1, 0]))
     print("FITNESS:", population.champion.fitness)
     population.champion.draw()
     print(population.champion.input_nodes)
     print(population.champion)
+
+    plt.plot([i for i in range(epochs)], average_fitness)
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.title("Average fitness for logical and")
+    # plt.xticks([i for i in range(0, epochs, 10)])
+    plt.show()
+    print(average_fitness[170:180])
 
 
 if __name__ == "__main__":
