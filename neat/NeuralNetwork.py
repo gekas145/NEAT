@@ -21,7 +21,6 @@ class NeuralNetwork:
         self.output_nodes = []
         self.fitness = 0.0
         self.shared_fitness = 0.0
-        # self.species = 0  # will store species list number
 
         id_num = 1
         for i in range(inputs_num):
@@ -85,8 +84,8 @@ class NeuralNetwork:
         copied.nodes_ordered = copied.nodes.copy()
         copied.prepare_nodes()
 
-        for node in self.input_nodes:
-            copied.input_nodes.append(copied.nodes[node.id])
+        for i in range(1, len(self.input_nodes)):
+            copied.input_nodes.append(copied.nodes[self.input_nodes[i].id])
 
         for node in self.output_nodes:
             copied.output_nodes.append(copied.nodes[node.id])
@@ -175,12 +174,11 @@ class NeuralNetwork:
         if uniform(0, 1) < c.RESET_WEIGHT_PROBABILITY:
             connection.weight = uniform(-1, 1)
         else:
-            connection.weight += normal(0, 1) / 50
+            connection.weight += normal(0, 1) / 3
             if connection.weight > 1:
                 connection.weight = 1
             elif connection.weight < -1:
                 connection.weight = -1
-
 
     def crossover(self, net):
         # call on more fit parent
@@ -255,8 +253,8 @@ class NeuralNetwork:
         child.nodes_ordered = child.nodes.copy()
         child.prepare_nodes()
 
-        for node in self.input_nodes:
-            child.input_nodes.append(child.nodes[node.id])
+        for i in range(1, len(self.input_nodes)):
+            child.input_nodes.append(child.nodes[self.input_nodes[i].id])
 
         for node in self.output_nodes:
             child.output_nodes.append(child.nodes[node.id])
@@ -270,7 +268,7 @@ class NeuralNetwork:
         W = 0.0  # sum of weights diffs(to calculate the average diff)
         maximum = max(len(self.connections), len(net.connections))
         if maximum > c.MIN_GENOME_LENGTH:
-            N = maximum  # length of bigger genome(1 if it's smaller than XXX)
+            N = maximum  # length of bigger genome(1 if it's smaller than MIN_GENOME_LENGTH)
         else:
             N = 1
         joint_num = 0  # number of joint genes(to calculate the average diff)
@@ -360,3 +358,15 @@ class NeuralNetwork:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+    def __repr__(self):
+        res = ''
+
+        for connection in self.connections:
+            res += 'From ' + str(connection.from_node.id) + ', '
+            res += 'To ' + str(connection.to_node.id) + ', '
+            res += 'Weight ' + str(connection.weight) + ', '
+            res += 'Enabled ' + str(connection.enabled)
+            res += '\n ------------------------------- \n'
+
+        return res

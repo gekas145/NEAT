@@ -1,3 +1,5 @@
+import math
+
 from NeuralNetwork import NeuralNetwork
 from random import sample, uniform, randint, choices
 from Connection import Connection
@@ -6,7 +8,6 @@ from Species import Species
 import config as c
 from math import floor
 import numpy as np
-
 
 
 class Population:
@@ -18,6 +19,9 @@ class Population:
 
         for i in range(n):
             self.organisms.append(NeuralNetwork(inputs_num, outputs_num))
+
+        self.champion = self.organisms[0].copy()
+        self.champion.fitness = math.inf
 
     def check_innovation_num(self, conn):
         for connection in self.connections_history:
@@ -123,10 +127,14 @@ class Population:
                 self.species[i].staleness += 1
 
             if self.species[i].staleness == c.MAX_STALENESS:
+                # print(self.species[i].staleness)
                 to_delete.append(i)
             else:  # delete the bottom half
                 self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2 + 1]
                 self.species[i].calculate_average_fitness()
+
+        if len(to_delete) == len(self.species):
+            raise ValueError('Population went extinct!')
 
         for i in range(len(to_delete) - 1, -1, -1):
             self.species.pop(to_delete[i])
@@ -168,7 +176,7 @@ class Population:
             self.organisms.append(species.organisms[0])  # add best of each species without mutations
 
         for species in self.species:
-            children_num = floor(species.average_fitness/average_sum * n) - 1
+            children_num = floor(species.average_fitness / average_sum) * n - 1
 
             for i in range(children_num):
                 self.add_offspring(species)
@@ -178,3 +186,13 @@ class Population:
 
         self.erase_species()
 
+    def update_champion(self):
+        updated = False
+        for organism in self.organisms:
+            if organism.fitness < self.champion.fitness:
+                self.champion = organism.copy()
+                self.champion.fitness = organism.fitness
+                updated = True
+
+        if updated:
+            print("CHAMPION UPDATED")

@@ -13,7 +13,7 @@ class Node:
         self.connections.append(connection)
 
     def __repr__(self):
-        return "id: " + str(self.id) + ", layer: " + str(self.layer) + ", val: " + str(self.output_val)
+        return "id: " + str(self.id) + "; layer: " + str(self.layer) + "; val: " + str(self.output_val)
 
     def copy(self):
         return Node(self.id, self.layer)
