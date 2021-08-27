@@ -173,7 +173,7 @@ class Population:
         average_sum = 0.0
         for species in self.species:
             average_sum += species.average_fitness
-            self.organisms.append(species.organisms[0])  # add best of each species without mutations
+            self.organisms.append(species.organisms[0].copy())  # add best of each species without mutations
 
         for species in self.species:
             children_num = floor(species.average_fitness / average_sum) * n - 1

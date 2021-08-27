@@ -52,8 +52,8 @@ def main():
 
     count = 0
     for organism in population.organisms:
-        population.add_node(organism)
-        if count % 6 == 0:
+        # population.add_node(organism)
+        if count % 3 == 0:
             population.add_node(organism)
         count += 1
 
@@ -72,8 +72,9 @@ def main():
         population.natural_selection()
 
         population.create_next_generation()
-        for organism in population.organisms:
-            organism.fitness = 0.0
+        # for organism in population.organisms:
+        #     if organism.fitness > 10:
+        #         print(organism)
 
         population.connections_history.clear()
 
@@ -91,13 +92,14 @@ def main():
     print(population.champion.input_nodes)
     print(population.champion)
 
-    plt.plot([i for i in range(epochs)], average_fitness)
+    plt.plot([i for i in range(epochs)], champion_fitness, color='y', label='champ')
+    plt.plot([i for i in range(epochs)], average_fitness, color='b', label='avg')
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
-    plt.title("Average fitness for logical and")
+    plt.title("Champion vs Average for logical and")
     # plt.xticks([i for i in range(0, epochs, 10)])
+    plt.legend()
     plt.show()
-    print(average_fitness[170:180])
 
 
 if __name__ == "__main__":
