@@ -114,7 +114,7 @@ class Population:
 
         for i in range(len(self.species)):
 
-            if len(self.species[i].organisms) == 0:
+            if len(self.species[i].organisms) <= 1:
                 to_delete.append(i)
                 continue
             else:

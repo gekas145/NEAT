@@ -32,7 +32,7 @@ def evaluate_xor(organism):
     for a in range(2):
         for b in range(2):
             output_val = organism.feedforward([a, b])[0].output_val
-            organism.fitness += abs(output_val - xor(a, b))
+            organism.fitness += (output_val - xor(a, b)) ** 2
 
 
 def simple_evaluate(organism):
@@ -47,20 +47,29 @@ def main():
     champion_fitness = []
 
     n = 100
-    epochs = 200
+    epochs = 300
     population = Population(n, 2, 1)
 
-    count = 0
+    # count = 0
     for organism in population.organisms:
-        # population.add_node(organism)
-        if count % 3 == 0:
-            population.add_node(organism)
-        count += 1
+        population.add_node(organism)
+        population.add_node(organism)
+    #     # for i in range(2):
+    #     #     population.add_connection(organism)
+    #     if count % 4 == 0:
+    #         population.add_node(organism)
+    #         # for i in range(2):
+    #         #     population.add_connection(organism)
+    #     # if count % 5 == 0:
+    #     #     population.add_node(organism)
+    #     #     population.add_connection(organism)
+    #     #     population.add_connection(organism)
+    #     count += 1
 
     for i in range(epochs):
         avg = 0.0
         for organism in population.organisms:
-            evaluate_log_and(organism)
+            evaluate_xor(organism)
             avg += organism.fitness
         average_fitness.append(avg/len(population.organisms))
 
@@ -68,25 +77,23 @@ def main():
         champion_fitness.append(population.champion.fitness)
 
         population.create_species()
+        # print(len(population.species))
 
         population.natural_selection()
 
         population.create_next_generation()
-        # for organism in population.organisms:
-        #     if organism.fitness > 10:
-        #         print(organism)
 
         population.connections_history.clear()
 
     print("================================")
     for organism in population.organisms:
-        evaluate_log_and(organism)
+        evaluate_xor(organism)
     population.update_champion()
 
-    print(population.champion.feedforward([0, 0]))
-    print(population.champion.feedforward([1, 1]))
-    print(population.champion.feedforward([0, 1]))
-    print(population.champion.feedforward([1, 0]))
+    print([0, 0], population.champion.feedforward([0, 0]))
+    print([1, 1], population.champion.feedforward([1, 1]))
+    print([0, 1], population.champion.feedforward([0, 1]))
+    print([1, 0], population.champion.feedforward([1, 0]))
     print("FITNESS:", population.champion.fitness)
     population.champion.draw()
     print(population.champion.input_nodes)
@@ -96,8 +103,8 @@ def main():
     plt.plot([i for i in range(epochs)], average_fitness, color='b', label='avg')
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
-    plt.title("Champion vs Average for logical and")
-    # plt.xticks([i for i in range(0, epochs, 10)])
+    plt.title("Champion vs Average for xor")
+    # # plt.xticks([i for i in range(0, epochs, 10)])
     plt.legend()
     plt.show()
 
