@@ -1,56 +1,66 @@
 import copy
 import random
 import numpy as np
+from pygame import QUIT, KEYDOWN, K_ESCAPE
+from pymunk import Vec2d
+import pymunk
+from pymunk.pygame_util import DrawOptions
+
 from Node import Node
 from Connection import Connection
 from NeuralNetwork import NeuralNetwork as nn
 from random import uniform, sample
 
 from Population import Population
+import pygame
 
+pygame.init()
+screen = pygame.display.set_mode((600, 600))
+clock = pygame.time.Clock()
 
+space = pymunk.Space()
+space.gravity = 0, 20
 
-net = nn(0, 0)
+def create_body(x, y):
+    body = pymunk.Body(10, 300, pymunk.Body.DYNAMIC)
+    body.position = x, y
+    body.elasticity = 100
+    shape = pymunk.Circle(body, 20)
+    space.add(body, shape)
+    return shape
 
-for i in range(1, 5):
-    net.nodes.append(Node(i, 0))
+def draw_bodies(bodies):
+    for body in bodies:
+        x, y = int(body.body.position[0]), int(body.body.position[1])
+        pygame.draw.circle(screen, (125, 0, 115), (x, y), 20)
 
-net.nodes[3].layer = 2
-net.nodes[4].layer = 1
+def main():
 
-net.input_nodes.append(net.nodes[1])
-net.input_nodes.append(net.nodes[2])
-net.output_nodes.append(net.nodes[3])
+    floor = pymunk.Body(1, 100, pymunk.Body.STATIC)
+    floor.position = 10, 600
+    floor.elasticity = 100
+    w, h = 1000, 10
+    vs = [(-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2)]
+    shape = pymunk.Poly(floor, vs)
+    space.add(floor, shape)
 
-net.layers_cardinalities = [3, 1, 1]
+    bodies = []
+    bodies.append(create_body(200, 200))
 
-net.add_connection(Connection(net.nodes[0], net.nodes[3], 1))
-net.add_connection(Connection(net.nodes[0], net.nodes[4], -0.96412))
-net.add_connection(Connection(net.nodes[2], net.nodes[3], 0.32547))
-net.add_connection(Connection(net.nodes[1], net.nodes[4], 1))
-net.add_connection(Connection(net.nodes[4], net.nodes[3], -0.71137))
-connection = Connection(net.nodes[1], net.nodes[3], 0.90078)
-connection.enabled = False
-net.add_connection(connection)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                bodies.append(create_body(pos[0], pos[1]))
 
-net.nodes_ordered = net.nodes.copy()
-net.prepare_nodes()
+        screen.fill((127, 127, 127))
+        draw_bodies(bodies)
+        pygame.display.update()
+        space.step(1/50)
+        clock.tick(120)
 
-net1 = net.copy()
-
-# net1.draw()
-
-print(net1.feedforward([0, 0])[0].output_val - net.feedforward([0, 0])[0].output_val)
-print(net1.feedforward([1, 1])[0].output_val - net.feedforward([1, 1])[0].output_val)
-print(net1.feedforward([0, 1])[0].output_val - net.feedforward([0, 1])[0].output_val)
-print(net1.feedforward([1, 0])[0].output_val - net.feedforward([1, 0])[0].output_val)
-print(net.input_nodes)
-# for node in net1.nodes_ordered:
-#     print("------------------------")
-#     print("From", node.id)
-#     for conn in node.connections:
-#         print("To", conn.to_node.id, conn.weight, conn.enabled)
-print(net1.input_nodes)
-
-
-
+if __name__ == "__main__":
+    main()

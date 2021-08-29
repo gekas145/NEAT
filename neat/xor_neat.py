@@ -51,9 +51,11 @@ def main():
     population = Population(n, 2, 1)
 
     # count = 0
-    for organism in population.organisms:
-        population.add_node(organism)
-        population.add_node(organism)
+
+    # for organism in population.organisms:
+    #     population.add_node(organism)
+    #     population.add_node(organism)
+
     #     # for i in range(2):
     #     #     population.add_connection(organism)
     #     if count % 4 == 0:
@@ -90,10 +92,10 @@ def main():
         evaluate_xor(organism)
     population.update_champion()
 
-    print([0, 0], population.champion.feedforward([0, 0]))
-    print([1, 1], population.champion.feedforward([1, 1]))
-    print([0, 1], population.champion.feedforward([0, 1]))
-    print([1, 0], population.champion.feedforward([1, 0]))
+    for a in range(2):
+        for b in range(2):
+            print([a, b], population.champion.feedforward([a, b]))
+
     print("FITNESS:", population.champion.fitness)
     population.champion.draw()
     print(population.champion.input_nodes)
