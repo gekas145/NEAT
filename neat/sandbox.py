@@ -31,7 +31,8 @@ class PivotJoint:
     def __init__(self, b, b2, a=(0, 0), a2=(0, 0), collide=False):
         joint = pymunk.constraints.PinJoint(b, b2, a, a2)
         joint.collide_bodies = collide
-        # joint.distance = 0
+        joint.distance = 0
+        joint.error_bias = pow(0.001, 5)
         space.add(joint)
 
 
