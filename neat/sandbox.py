@@ -19,12 +19,12 @@ class Segment:
     def __init__(self, p0, v, radius=10):
         self.body = pymunk.Body()
         self.body.position = p0
-        shape = pymunk.Segment(self.body, (0, 0), v, radius)
-        shape.density = 0.1
-        shape.elasticity = 0.5
-        shape.filter = pymunk.ShapeFilter(group=1)
-        shape.color = (0, 255, 0, 0)
-        space.add(self.body, shape)
+        self.shape = pymunk.Segment(self.body, (0, 0), v, radius)
+        self.shape.density = 0.1
+        self.shape.elasticity = 0.5
+        self.shape.filter = pymunk.ShapeFilter(group=1)
+        self.shape.color = (0, 255, 0, 0)
+        space.add(self.body, self.shape)
 
 
 class PivotJoint:
@@ -100,7 +100,6 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     cart_speed = -1
-                    # cart.apply_force_at_local_point((400, 0), (h / 2, pos[1]))
                 if event.key == pygame.K_RIGHT:
                     cart_speed = 1
 
@@ -110,6 +109,7 @@ def main():
 
         # pygame.draw.rect(screen, (0, 0, 0), [0, 590, width, height])
         # draw_bodies(bodies)
+        # print(segment.body.position)
         space.debug_draw(draw_options)
         pygame.display.update()
         space.step(1 / 50)
