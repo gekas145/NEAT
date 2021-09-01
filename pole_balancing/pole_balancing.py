@@ -55,7 +55,7 @@ cart_shape = pymunk.Poly(cart, [(0, 0), (w, 0), (w, h), (0, h)])
 space.add(cart, cart_shape)
 
 p = Vec2d(350, 540)
-v = Vec2d(-30, -170)
+v = Vec2d(-50, -170)
 segment = Segment(p, v)
 PivotJoint(cart_shape.body, segment.body, a=(150, 50), collide=False)
 
@@ -75,7 +75,9 @@ def main():
 
         screen.fill((127, 127, 127))
 
-        if segment.body.angle < -pi/2 or segment.body.angle > pi/2:
+        angle = segment.body.angle
+        angle -= 0.27  # calculated empirically
+        if angle < -pi/2 or angle > pi/2:
             running = False
         else:
             pos = cart.position
