@@ -1,5 +1,3 @@
-from Node import Node
-
 class Connection:
     def __init__(self, from_node, to_node, weight, innov=None):
         self.from_node = from_node

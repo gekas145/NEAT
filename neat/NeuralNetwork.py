@@ -5,6 +5,7 @@ from Connection import Connection
 from random import uniform, sample
 from numpy.random import normal
 import config as c
+import json
 
 
 class NeuralNetwork:
@@ -370,3 +371,25 @@ class NeuralNetwork:
             res += '\n ------------------------------- \n'
 
         return res
+
+    def save(self, filename):
+        net_data = {"layers_cardinalities": self.layers_cardinalities.copy(),
+                    "next_node_id": [self.next_node_id]}
+
+        nodes = []
+        for node in self.nodes:
+            nodes.append([node.id, node.layer])
+        net_data["nodes"] = nodes
+
+        connections = []
+        for connection in self.connections:
+            connections.append([connection.from_node.id,
+                                connection.to_node.id,
+                                connection.weight,
+                                connection.innovation_number])
+        net_data["connections"] = connections
+
+        f = open(filename, "w")
+        json.dump(net_data, f)
+        f.close()
+
