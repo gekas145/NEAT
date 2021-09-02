@@ -28,6 +28,17 @@ class PivotJoint:
         space.add(joint)
 
 
+def check_game_over(angle, cart_pos, bound=pi / 6):
+    angle -= 0.27  # calculated empirically
+    if angle < -bound or angle > bound:
+        return False
+
+    if cart_pos < 0 or cart_pos + w > 600:
+        return False
+
+    return True
+
+
 human_plays = True
 
 pygame.init()
@@ -59,6 +70,7 @@ v = Vec2d(-50, -170)
 segment = Segment(p, v)
 PivotJoint(cart_shape.body, segment.body, a=(150, 50), collide=False)
 
+
 def main():
     cart_speed = 0
     running = True
@@ -75,13 +87,9 @@ def main():
 
         screen.fill((127, 127, 127))
 
-        angle = segment.body.angle
-        angle -= 0.27  # calculated empirically
-        if angle < -pi/2 or angle > pi/2:
-            running = False
-        else:
-            pos = cart.position
-            cart.position = (pos[0] + cart_speed, pos[1])
+        pos = cart.position
+        running = check_game_over(segment.body.angle, pos[0])
+        cart.position = (pos[0] + cart_speed, pos[1])
 
         space.debug_draw(draw_options)
         pygame.display.update()
