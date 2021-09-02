@@ -377,7 +377,7 @@ class NeuralNetwork:
                     "next_node_id": [self.next_node_id]}
 
         nodes = []
-        for node in self.nodes:
+        for node in self.nodes[1:len(self.nodes)]:
             nodes.append([node.id, node.layer])
         net_data["nodes"] = nodes
 
@@ -386,10 +386,45 @@ class NeuralNetwork:
             connections.append([connection.from_node.id,
                                 connection.to_node.id,
                                 connection.weight,
-                                connection.innovation_number])
+                                connection.innovation_number,
+                                connection.enabled])
         net_data["connections"] = connections
 
         f = open(filename, "w")
         json.dump(net_data, f)
         f.close()
+
+    @staticmethod
+    def load(filename):
+        f = open(filename, "r")
+        net_data = json.load(f)
+        f.close()
+
+        net = NeuralNetwork(0, 0)
+
+        net.layers_cardinalities = net_data["layers_cardinalities"].copy()
+
+        last_layer_num = len(net.layers_cardinalities) - 1
+        for node in net_data["nodes"]:
+            nd = Node(node[0], node[1])
+            net.nodes.append(nd)
+            if node[1] == 0:
+                net.input_nodes.append(nd)
+            elif node[1] == last_layer_num:
+                net.output_nodes.append(nd)
+
+        for conn in net_data["connections"]:
+            connection = Connection(net.nodes[int(conn[0])],
+                                    net.nodes[int(conn[1])],
+                                    conn[2],
+                                    int(conn[3]))
+            connection.enabled = conn[4]
+            net.add_connection(connection)
+
+        net.next_node_id = net_data["next_node_id"][0]
+
+        net.nodes_ordered = net.nodes.copy()
+        net.prepare_nodes()
+
+        return net
 

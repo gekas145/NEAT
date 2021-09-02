@@ -13,12 +13,18 @@ from random import uniform, sample
 
 from Population import Population
 
-
 population = Population(1, 2, 2)
 net = population.organisms[0]
 
 population.add_node(net)
 population.add_node(net)
 
-net.save("test.json")
+# net.draw()
+# print(net.feedforward([0.5, 0.72]))
 
+# net.save("test.json")
+# print(net.feedforward([0.5, 0.72]))
+
+net1 = nn.load("xor_champ.json")
+# net1.draw()
+print(net1.feedforward([0, 1]))

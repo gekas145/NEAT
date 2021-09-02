@@ -110,6 +110,8 @@ def main():
     plt.legend()
     plt.show()
 
+    population.champion.save("xor_champ.json")
+
 
 if __name__ == "__main__":
     main()
