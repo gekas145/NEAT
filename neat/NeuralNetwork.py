@@ -1,10 +1,10 @@
 import pygame
 import copy
-from Node import Node
-from Connection import Connection
+from neat.Node import Node
+from neat.Connection import Connection
 from random import uniform, sample
 from numpy.random import normal
-import config as c
+import neat.config as c
 import json
 
 

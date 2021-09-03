@@ -1,3 +1,4 @@
+from neat.Population import Population
 from pymunk import Vec2d
 import pymunk
 from pymunk.pygame_util import DrawOptions
@@ -40,15 +41,19 @@ def check_game_over(angle, cart_pos, bound=pi / 6):
 
 
 human_plays = True
+visualise = True  # can't be False if human_plays is True
 
-pygame.init()
-screen = pygame.display.set_mode((600, 600))
-clock = pygame.time.Clock()
+if visualise:
+    pygame.init()
+    screen = pygame.display.set_mode((600, 600))
+    clock = pygame.time.Clock()
 
 space = pymunk.Space()
 space.gravity = 0, 50
 space.damping = 0.9
-draw_options = pymunk.pygame_util.DrawOptions(screen)
+
+if visualise:
+    draw_options = pymunk.pygame_util.DrawOptions(screen)
 
 floor = pymunk.Body(1, 100, pymunk.Body.STATIC)
 floor.position = 0, 590
@@ -74,27 +79,60 @@ PivotJoint(cart_shape.body, segment.body, a=(150, 50), collide=False)
 def main():
     cart_speed = 0
     running = True
-    while running:
-        if human_plays:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        cart_speed = -1
-                    if event.key == pygame.K_RIGHT:
-                        cart_speed = 1
+    if human_plays:
+        epochs = 1
+        population = Population(1, 3, 2)
+    else:
+        epochs = 500
+        population = Population(150, 3, 2)
+        champion_fitness = []
 
-        screen.fill((127, 127, 127))
+    for i in range(epochs):
+        for organism in population.organisms:
+            while running:
+                if human_plays:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_LEFT:
+                                cart_speed = -1
+                            if event.key == pygame.K_RIGHT:
+                                cart_speed = 1
+                else:
+                    # collect and scale data
+                    # do feedforward
+                    # update fitness
+                    pass
 
-        pos = cart.position
-        running = check_game_over(segment.body.angle, pos[0])
-        cart.position = (pos[0] + cart_speed, pos[1])
+                if visualise:
+                    screen.fill((127, 127, 127))
 
-        space.debug_draw(draw_options)
-        pygame.display.update()
-        space.step(1 / 50)
-        clock.tick(120)
+                pos = cart.position
+                running = check_game_over(segment.body.angle, pos[0])
+                cart.position = (pos[0] + cart_speed, pos[1])
+                # print(segment.body.angular_velocity)
+                # print((cart.position[0] + w/2)/ 600)
+
+                if visualise:
+                    space.debug_draw(draw_options)
+                    pygame.display.update()
+                    clock.tick(120)
+
+                space.step(1 / 50)
+
+        if not human_plays:
+            population.update_champion()
+            champion_fitness.append(population.champion.fitness)
+
+            population.create_species()
+            # print(len(population.species))
+
+            population.natural_selection()
+
+            population.create_next_generation()
+
+            population.connections_history.clear()
 
 
 if __name__ == "__main__":

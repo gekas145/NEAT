@@ -1,11 +1,11 @@
 import math
 
-from NeuralNetwork import NeuralNetwork
+from neat.NeuralNetwork import NeuralNetwork
 from random import sample, uniform, randint, choices
-from Connection import Connection
-from Node import Node
-from Species import Species
-import config as c
+from neat.Connection import Connection
+from neat.Node import Node
+from neat.Species import Species
+import neat.config as c
 from math import floor
 import numpy as np
 

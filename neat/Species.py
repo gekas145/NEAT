@@ -1,7 +1,3 @@
-import config as c
-from random import uniform, sample
-
-
 class Species:
 
     def __init__(self, organism):
