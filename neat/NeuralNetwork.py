@@ -374,7 +374,8 @@ class NeuralNetwork:
 
     def save(self, filename):
         net_data = {"layers_cardinalities": self.layers_cardinalities.copy(),
-                    "next_node_id": [self.next_node_id]}
+                    "next_node_id": [self.next_node_id],
+                    "fitness": [self.fitness]}
 
         nodes = []
         for node in self.nodes[1:len(self.nodes)]:
@@ -403,6 +404,7 @@ class NeuralNetwork:
         net = NeuralNetwork(0, 0)
 
         net.layers_cardinalities = net_data["layers_cardinalities"].copy()
+        net.fitness = net_data["fitness"][0]
 
         last_layer_num = len(net.layers_cardinalities) - 1
         for node in net_data["nodes"]:
