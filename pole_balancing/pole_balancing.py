@@ -4,6 +4,8 @@ import pymunk
 from pymunk.pygame_util import DrawOptions
 import pygame
 from math import pi
+from matplotlib import pyplot as plt
+from neat.NeuralNetwork import NeuralNetwork
 
 
 class Segment:
@@ -68,10 +70,12 @@ def check_game_over(angle, cart_pos, bound=pi / 6):
 
 
 human_plays = False
-visualise = False  # can't be False if human_plays is True
+visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
+replay = True
 
 w, h = 300, 100  # cart parameters
+
 
 # if visualise:
 #     pygame.init()
@@ -81,16 +85,22 @@ w, h = 300, 100  # cart parameters
 
 
 def main():
-    if human_plays:
+    if replay:
+        epochs = 1
+        population = Population(1, 3, 2)
+        population.organisms[0] = NeuralNetwork.load("champ_300.json")
+    elif human_plays:
         epochs = 1
         population = Population(1, 3, 2)
     else:
         epochs = 300
         population = Population(150, 3, 2)
         champion_fitness = []
+        average_fitness = []
 
     for i in range(epochs):
-        print("----------------------", "EPOCH:", i)
+        avg = 0.0
+        # print("----------------------", "EPOCH:", i)
         if visualise:
             pygame.init()
             screen = pygame.display.set_mode((600, 600))
@@ -142,12 +152,14 @@ def main():
 
                 space.step(1 / 50)
 
-            print(organism.fitness)
+            # print(organism.fitness)
+            avg += organism.fitness
             organism.fitness *= -1
 
-        if not human_plays:
+        if not human_plays and not replay:
+            average_fitness.append(avg / len(population.organisms))
             population.update_champion()
-            champion_fitness.append(population.champion.fitness)
+            champion_fitness.append(-population.champion.fitness)
 
             population.create_species()
             # print(len(population.species))
@@ -158,8 +170,17 @@ def main():
 
             population.connections_history.clear()
 
-    if not human_plays:
-        population.champion.save("champ.json")
+    if not human_plays and not replay:
+        plt.plot([i for i in range(epochs)], champion_fitness, color='y', label='champ')
+        plt.plot([i for i in range(epochs)], average_fitness, color='b', label='avg')
+        plt.xlabel("Generation")
+        plt.ylabel("Fitness")
+        plt.title("Champion vs Average for xor")
+        # plt.xticks([i for i in range(0, epochs, 10)])
+        plt.legend()
+        plt.show()
+
+        # population.champion.save("champ_300.json")
 
 
 if __name__ == "__main__":
