@@ -99,9 +99,9 @@ def check_game_over(angle, cart_pos, bound=pi / 6):
 
 
 human_plays = False
-visualise = True  # can't be False if human_plays is True
+visualise = False  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
-replay = True
+replay = False
 
 w, h = 300, 100  # cart parameters
 r = 60  # border parameter
@@ -245,7 +245,7 @@ def main():
         plt.legend()
         plt.show()
 
-        population.champion.save("champ_ver2.json")
+        population.champion.save("champ_300_2.json")
 
 
 if __name__ == "__main__":

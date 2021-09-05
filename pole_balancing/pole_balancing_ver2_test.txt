@@ -1,0 +1,5 @@
+pole balancing version 2 champion results:
+6090, 684, 6328, 1246, 7044, 5612, 5386, 6496, 6206, 8292
+
+Mean 5338.4
+Standard deviation 2318.5793581415323
