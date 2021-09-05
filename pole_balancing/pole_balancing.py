@@ -9,6 +9,7 @@ from math import pi
 from matplotlib import pyplot as plt
 from neat.NeuralNetwork import NeuralNetwork
 import time
+import neat.config as config
 
 
 # Print iterations progress
@@ -91,30 +92,31 @@ def check_game_over(angle, cart_pos, bound=pi / 6):
     if angle < -bound or angle > bound:
         return False, 0
 
-    if cart_pos < 0 or cart_pos + w > 600:
+    if cart_pos < r or cart_pos + w > 600 - r:
         return False, 1
 
     return True, None
 
 
 human_plays = False
-visualise = False  # can't be False if human_plays is True
+visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
-replay = False
+replay = True
 
 w, h = 300, 100  # cart parameters
+r = 60  # border parameter
 
 
 def main():
     if replay:
         epochs = 1
         population = Population(1, 3, 2)
-        population.organisms[0] = NeuralNetwork.load("champ_300.json")
+        population.organisms[0] = NeuralNetwork.load("champ_ver2.json")
     elif human_plays:
         epochs = 1
         population = Population(1, 3, 2)
     else:
-        epochs = 300
+        epochs = 200
         population = Population(150, 3, 2)
         champion_fitness = []
         average_fitness = []
@@ -153,7 +155,7 @@ def main():
 
                     if count == 0:
                         velocity = segment.body.angular_velocity
-                        cart_pos = (cart.position[0] + w / 2 - 300) / (300 - w / 2)
+                        cart_pos = (cart.position[0] + w / 2 - 300) / (300 - w / 2 - r)
                         angle = (segment.body.angle - 0.27) * 6 / pi
 
                         res = organism.feedforward([velocity, cart_pos, angle])
@@ -164,20 +166,29 @@ def main():
                             cart_speed = -1
                         # print(cart_speed)
 
-                        organism.fitness += 1
+                        if abs(cart_pos) < config.CENTER_ACCEPTABLE_DEVIATION:
+                            organism.fitness += config.CENTER_REWARD
+                        else:
+                            organism.fitness += config.USUAL_REWARD
 
                     count += 1
 
                 pos = cart.position
                 running, cause = check_game_over(segment.body.angle, pos[0])
 
-                if cause is not None:
+                if cause is not None and not human_plays and not replay:
                     defeat_cause[cause][i] += 1
+                    if cause == 1:
+                        organism.fitness -= config.OUT_OF_FIELD_PENALTY
+                    else:
+                        organism.fitness -= config.OUT_OF_ANGLE_PENALTY
 
                 cart.position = (pos[0] + cart_speed, pos[1])
 
                 if visualise:
                     screen.fill((127, 127, 127))
+                    pygame.draw.line(screen, (0, 0, 0), (r, 0), (r, 600), width=3)
+                    pygame.draw.line(screen, (0, 0, 0), (600 - r, 0), (600 - r, 600), width=3)
                     space.debug_draw(draw_options)
                     pygame.display.update()
                     clock.tick(120)
@@ -234,7 +245,7 @@ def main():
         plt.legend()
         plt.show()
 
-        # population.champion.save("champ_300.json")
+        population.champion.save("champ_ver2.json")
 
 
 if __name__ == "__main__":
