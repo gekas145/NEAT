@@ -110,7 +110,7 @@ class NeuralNetwork:
 
         for node in self.nodes_ordered:
             if node.layer != 0:
-                node.output_val = Node.sigmoid(node.output_sum)
+                node.output_val = c.ACTIVATION_FUNCTION(node.output_sum)
 
             if node.layer == len(self.layers_cardinalities) - 1:
                 node.output_sum = 0

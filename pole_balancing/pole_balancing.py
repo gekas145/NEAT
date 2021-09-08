@@ -63,16 +63,17 @@ r = 60  # border parameter
 
 
 def main():
+    iterations = 0
     if replay:
         epochs = 1
-        population = Population(1, 3, 2)
+        population = Population(1, 3, config.OUTPUTS_NUM)
         population.organisms[0] = NeuralNetwork.load("champ_ver2.json")
     elif human_plays:
         epochs = 1
-        population = Population(1, 3, 2)
+        population = Population(1, 3, config.OUTPUTS_NUM)
     else:
         epochs = 200
-        population = Population(150, 3, 2)
+        population = Population(150, 3, config.OUTPUTS_NUM)
         champion_fitness = []
         average_fitness = []
         std_fitness = []
@@ -97,6 +98,9 @@ def main():
             start = time.time()
 
             while running:
+                if replay or human_plays:
+                    iterations += 1
+
                 if human_plays:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -116,10 +120,16 @@ def main():
 
                         res = organism.feedforward([velocity, cart_pos, angle])
 
-                        if res[0].output_val > res[1].output_val:
-                            cart_speed = 1
+                        if config.OUTPUTS_NUM == 2:
+                            if res[0].output_val > res[1].output_val:
+                                cart_speed = 1
+                            else:
+                                cart_speed = -1
                         else:
-                            cart_speed = -1
+                            if res[0].output_val > config.DECISION_THRESHOLD:
+                                cart_speed = 1
+                            else:
+                                cart_speed = -1
                         # print(cart_speed)
 
                         if abs(cart_pos) < config.CENTER_ACCEPTABLE_DEVIATION:
@@ -157,7 +167,8 @@ def main():
 
         if replay or human_plays:
             end = time.time()
-            print(end - start)
+            print("Total time in seconds", end - start)
+            print("Total iterations", iterations)
 
         if not human_plays and not replay:
             average_fitness.append(np.average(observed_fitness))
