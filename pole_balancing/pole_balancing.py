@@ -66,14 +66,14 @@ def main():
     iterations = 0
     if replay:
         epochs = 1
-        population = Population(1, 3, config.OUTPUTS_NUM)
+        population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
         population.organisms[0] = NeuralNetwork.load("champ_ver2.json")
     elif human_plays:
         epochs = 1
-        population = Population(1, 3, config.OUTPUTS_NUM)
+        population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
     else:
-        epochs = 200
-        population = Population(150, 3, config.OUTPUTS_NUM)
+        epochs = config.EPOCHS
+        population = Population(config.ORGANISMS_NUM, config.INPUTS_NUM, config.OUTPUTS_NUM)
         champion_fitness = []
         average_fitness = []
         std_fitness = []
@@ -118,7 +118,10 @@ def main():
                         cart_pos = (cart.position[0] + w / 2 - 300) / (300 - w / 2 - r)
                         angle = (pole.body.angle - 0.27) * 6 / pi
 
-                        res = organism.feedforward([velocity, cart_pos, angle])
+                        if config.INPUTS_NUM == 3:
+                            res = organism.feedforward([velocity, cart_pos, angle])
+                        else:
+                            res = organism.feedforward([cart_pos, angle])
 
                         if config.OUTPUTS_NUM == 2:
                             if res[0].output_val > res[1].output_val:
@@ -212,7 +215,7 @@ def main():
         plt.legend()
         plt.show()
 
-        population.champion.save("champ_300_2.json")
+        population.champion.save("champ_ver3.json")
 
 
 if __name__ == "__main__":
