@@ -7,8 +7,8 @@ DISABLE_GENE_PROBABILITY = 0.75  # default 0.75
 # mutations parameters
 MUTATE_WEIGHT_PROBABILITY = 0.8
 RESET_WEIGHT_PROBABILITY = 0.1
-ADD_NODE_PROBABILITY = 0.1
-ADD_CONNECTION_PROBABILITY = 0.3
+ADD_NODE_PROBABILITY = 0.002
+ADD_CONNECTION_PROBABILITY = 0.05
 CROSSOVER_PROBABILITY = 0.75
 
 # species division parameters
@@ -29,11 +29,11 @@ CENTER_REWARD = 10  # reward for not going off center more then CENTER_ACCEPTABL
 USUAL_REWARD = 1
 
 # network parameters(used for pole balancing)
-ACTIVATION_FUNCTION = Node.tanh
-INPUTS_NUM = 5
-OUTPUTS_NUM = 1  # can have values 1 or 2 only
+ACTIVATION_FUNCTION = Node.sigmoid
+INPUTS_NUM = 3
+OUTPUTS_NUM = 2  # can have values 1 or 2 only
 DECISION_THRESHOLD = 0  # used when OUTPUTS_NUM == 1
 
 # main algorithm parameters
-EPOCHS = 100
+EPOCHS = 200
 ORGANISMS_NUM = 150  # cardinality of the population

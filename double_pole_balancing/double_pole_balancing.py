@@ -9,9 +9,9 @@ from matplotlib import pyplot as plt
 from neat.NeuralNetwork import NeuralNetwork
 import time
 import neat.config as config
-from PivotJoint import PivotJoint
-from Pole import Pole
-from progress_bar import printProgressBar
+from pole_balancing.PivotJoint import PivotJoint
+from pole_balancing.Pole import Pole
+from pole_balancing.progress_bar import printProgressBar
 
 
 def init():
@@ -33,17 +33,23 @@ def init():
     space.add(cart, cart_shape)
 
     p = Vec2d(350, 540)
-    v = Vec2d(-50, -170)
-    pole = Pole(space, p, v)
-    PivotJoint(space, cart_shape.body, pole.body, a=(150, 50))
+    v = Vec2d(0, -300)
+    # p1 = Vec2d(275, 540)
+    p1 = Vec2d(350, 540)
+    v1 = Vec2d(0, -200)
+    poles = [Pole(space, p, v), Pole(space, p1, v1, color=(148, 78, 78, 0))]
+    PivotJoint(space, cart_shape.body, poles[0].body, a=(150, 50))
+    PivotJoint(space, cart_shape.body, poles[1].body, a=(150, 50))
 
-    return space, pole, cart
+    return space, poles, cart
 
 
-def check_game_over(angle, cart_pos, bound=pi / 6):
-    angle -= 0.27  # calculated empirically
+def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
 
     if angle < -bound or angle > bound:
+        return False, 0
+
+    if angle1 < -bound or angle1 > bound:
         return False, 0
 
     if cart_pos < r or cart_pos + w > 600 - r:
@@ -57,8 +63,11 @@ visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
 replay = True
 
+global running
+global cart_speed
+
 w, h = 300, 100  # cart parameters
-r = 60  # border parameter
+r = 30  # border parameter
 
 
 def main():
@@ -66,7 +75,7 @@ def main():
     if replay:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
-        population.organisms[0] = NeuralNetwork.load("champ_ver2.json")
+        population.organisms[0] = NeuralNetwork.load("dpb_champ.json")
     elif human_plays:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
@@ -89,7 +98,9 @@ def main():
             draw_options = pymunk.pygame_util.DrawOptions(screen)
 
         for organism in population.organisms:
-            cart_speed = 0
+            global cart_speed
+            cart_speed = -1
+            global running
             running = True
             space, pole, cart = init()
             count = 0
@@ -113,14 +124,13 @@ def main():
                     count = count % decision_frequency
 
                     if count == 0:
-                        velocity = pole.body.angular_velocity
-                        cart_pos = (cart.position[0] + w / 2 - 300) / (300 - w / 2 - r)
-                        angle = (pole.body.angle - 0.27) * 6 / pi
+                        inputs = [(cart.position[0] + w / 2 - 300) / (300 - w / 2 - r)]
 
-                        if config.INPUTS_NUM == 3:
-                            res = organism.feedforward([velocity, cart_pos, angle])
-                        else:
-                            res = organism.feedforward([cart_pos, angle])
+                        for j in range(2):
+                            inputs.append(pole[j].body.angular_velocity)
+                            inputs.append(pole[j].body.angle * 6 / pi)
+
+                        res = organism.feedforward(inputs)
 
                         if config.OUTPUTS_NUM == 2:
                             if res[0].output_val > res[1].output_val:
@@ -134,15 +144,12 @@ def main():
                                 cart_speed = -1
                         # print(cart_speed)
 
-                        if abs(cart_pos) < config.CENTER_ACCEPTABLE_DEVIATION:
-                            organism.fitness += config.CENTER_REWARD
-                        else:
-                            organism.fitness += config.USUAL_REWARD
+                        organism.fitness += 1
 
                     count += 1
 
                 pos = cart.position
-                running, cause = check_game_over(pole.body.angle, pos[0])
+                running, cause = check_game_over(pole[0].body.angle, pole[1].body.angle, pos[0])
 
                 if cause is not None and not human_plays and not replay:
                     defeat_cause[cause][i] += 1
@@ -214,7 +221,7 @@ def main():
         plt.legend()
         plt.show()
 
-        population.champion.save("champ_ver3.json")
+        population.champion.save("dpb_champ.json")
 
 
 if __name__ == "__main__":
