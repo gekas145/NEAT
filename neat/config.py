@@ -7,8 +7,8 @@ DISABLE_GENE_PROBABILITY = 0.75  # default 0.75
 # mutations parameters
 MUTATE_WEIGHT_PROBABILITY = 0.8
 RESET_WEIGHT_PROBABILITY = 0.1
-ADD_NODE_PROBABILITY = 0.1
-ADD_CONNECTION_PROBABILITY = 0.3
+ADD_NODE_PROBABILITY = 0.001
+ADD_CONNECTION_PROBABILITY = 0.002
 CROSSOVER_PROBABILITY = 0.75
 
 # species division parameters
@@ -35,5 +35,6 @@ OUTPUTS_NUM = 1  # can have values 1 or 2 only
 DECISION_THRESHOLD = 0  # used when OUTPUTS_NUM == 1
 
 # main algorithm parameters
-EPOCHS = 100
+EPOCHS = 200
 ORGANISMS_NUM = 150  # cardinality of the population
+TYPE = 1  # used for double pole balancing task when OUTPUTS_NUM == 1(Note: ACTIVATION_FUNCTION must be tanh then)

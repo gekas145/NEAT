@@ -14,7 +14,7 @@ from random import uniform, sample
 from Population import Population
 
 
-net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/double_pole_balancing/dpb_champ.json")
+net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/double_pole_balancing/dpb_champ_ver2.json")
 # net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/pole_balancing/champ.json")
 net1.draw()
 print(net1)

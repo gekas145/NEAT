@@ -16,7 +16,7 @@ from pole_balancing.progress_bar import printProgressBar
 
 def init():
     space = pymunk.Space()
-    space.gravity = 0, 50
+    space.gravity = 0, 10
     space.damping = 0.9
 
     floor = pymunk.Body(1, 100, pymunk.Body.STATIC)
@@ -32,16 +32,16 @@ def init():
     cart_shape = pymunk.Poly(cart, [(0, 0), (w, 0), (w, h), (0, h)])
     space.add(cart, cart_shape)
 
-    p = Vec2d(350, 540)
-    v = Vec2d(0, -300)
+    p = Vec2d(450, 540)
+    v = Vec2d(0, -250)
     # p1 = Vec2d(275, 540)
-    p1 = Vec2d(350, 540)
-    v1 = Vec2d(0, -200)
+    p1 = Vec2d(250, 540)
+    v1 = Vec2d(0, -150)
     poles = [Pole(space, p, v), Pole(space, p1, v1, color=(148, 78, 78, 0))]
-    PivotJoint(space, cart_shape.body, poles[0].body, a=(150, 50))
-    PivotJoint(space, cart_shape.body, poles[1].body, a=(150, 50))
+    PivotJoint(space, cart_shape.body, poles[0].body, a=(250, 50))
+    PivotJoint(space, cart_shape.body, poles[1].body, a=(50, 50))
 
-    return space, poles, cart
+    return space, poles, cart_shape
 
 
 def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
@@ -75,7 +75,7 @@ def main():
     if replay:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
-        population.organisms[0] = NeuralNetwork.load("dpb_champ.json")
+        population.organisms[0] = NeuralNetwork.load("dpb_champ_ver2.json")
     elif human_plays:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
@@ -103,7 +103,7 @@ def main():
             global running
             running = True
             space, pole, cart = init()
-            count = 0
+            count = 1
 
             start = time.time()
 
@@ -124,7 +124,7 @@ def main():
                     count = count % decision_frequency
 
                     if count == 0:
-                        inputs = [(cart.position[0] + w / 2 - 300) / (300 - w / 2 - r)]
+                        inputs = [(cart.body.position[0] + w / 2 - 300) / (300 - w / 2 - r)]
 
                         for j in range(2):
                             inputs.append(pole[j].body.angular_velocity)
@@ -138,17 +138,20 @@ def main():
                             else:
                                 cart_speed = -1
                         else:
-                            if res[0].output_val > config.DECISION_THRESHOLD:
-                                cart_speed = 1
+                            if config.TYPE == 0:
+                                if res[0].output_val > config.DECISION_THRESHOLD:
+                                    cart_speed = 1
+                                else:
+                                    cart_speed = -1
                             else:
-                                cart_speed = -1
+                                cart_speed = res[0].output_val * 3
                         # print(cart_speed)
 
                         organism.fitness += 1
 
                     count += 1
 
-                pos = cart.position
+                pos = cart.body.position
                 running, cause = check_game_over(pole[0].body.angle, pole[1].body.angle, pos[0])
 
                 if cause is not None and not human_plays and not replay:
@@ -158,7 +161,7 @@ def main():
                     else:
                         organism.fitness -= config.OUT_OF_ANGLE_PENALTY
 
-                cart.position = (pos[0] + cart_speed, pos[1])
+                cart.body.position = (pos[0] + cart_speed, pos[1])
 
                 if visualise:
                     screen.fill((127, 127, 127))
@@ -221,7 +224,7 @@ def main():
         plt.legend()
         plt.show()
 
-        population.champion.save("dpb_champ.json")
+        population.champion.save("dpb_champ_ver2.json")
 
 
 if __name__ == "__main__":
