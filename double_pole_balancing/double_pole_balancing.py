@@ -59,9 +59,9 @@ def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
 
 
 human_plays = False
-visualise = True  # can't be False if human_plays is True
+visualise = False  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
-replay = True
+replay = False
 
 global running
 global cart_speed
@@ -71,6 +71,7 @@ r = 30  # border parameter
 
 
 def main():
+    passed_epochs = 0
     iterations = 0
     if replay:
         epochs = 1
@@ -89,6 +90,7 @@ def main():
         printProgressBar(0, epochs, prefix='Progress:', suffix='Complete', length=50)
 
     for i in range(epochs):
+        passed_epochs += 1
         observed_fitness = []
         # sys.stdout.write("\r---------------------- EPOCH:" + str(i))
         if visualise:
@@ -148,6 +150,8 @@ def main():
                         # print(cart_speed)
 
                         organism.fitness += 1
+                        if organism.fitness > 500:
+                            break
 
                     count += 1
 
@@ -187,6 +191,8 @@ def main():
             std_fitness.append(np.std(observed_fitness))
             population.update_champion()
             champion_fitness.append(-population.champion.fitness)
+            if population.champion.fitness < -500:
+                break
 
             population.create_species()
             # print(len(population.species))
@@ -203,7 +209,7 @@ def main():
         average_fitness = np.array(average_fitness)
         std_fitness = np.array(std_fitness)
 
-        x = [i for i in range(epochs)]
+        x = [i for i in range(passed_epochs)]
         plt.plot(x, champion_fitness, color='y', label='champ')
 
         plt.plot(x, average_fitness, color='b', label='avg')
@@ -216,13 +222,13 @@ def main():
         plt.legend()
         plt.show()
 
-        plt.title("Defeat causes in pole balancing")
-        plt.xlabel("Generation")
-        plt.ylabel("Number")
-        plt.plot(x, defeat_cause[0], color='y', label='angle out')
-        plt.plot(x, defeat_cause[1], color='b', label='field out')
-        plt.legend()
-        plt.show()
+        # plt.title("Defeat causes in pole balancing")
+        # plt.xlabel("Generation")
+        # plt.ylabel("Number")
+        # plt.plot(x, defeat_cause[0], color='y', label='angle out')
+        # plt.plot(x, defeat_cause[1], color='b', label='field out')
+        # plt.legend()
+        # plt.show()
 
         population.champion.save("dpb_champ_ver2.json")
 
