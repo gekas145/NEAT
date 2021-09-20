@@ -12,11 +12,12 @@ import neat.config as config
 from pole_balancing.PivotJoint import PivotJoint
 from pole_balancing.Pole import Pole
 from pole_balancing.progress_bar import printProgressBar
+import sys
 
 
 def init():
     space = pymunk.Space()
-    space.gravity = 0, 10
+    space.gravity = 0, 30
     space.damping = 0.9
 
     floor = pymunk.Body(1, 100, pymunk.Body.STATIC)
@@ -36,7 +37,7 @@ def init():
     v = Vec2d(0, -250)
     # p1 = Vec2d(275, 540)
     p1 = Vec2d(250, 540)
-    v1 = Vec2d(0, -150)
+    v1 = Vec2d(0, -100)
     poles = [Pole(space, p, v), Pole(space, p1, v1, color=(148, 78, 78, 0))]
     PivotJoint(space, cart_shape.body, poles[0].body, a=(250, 50))
     PivotJoint(space, cart_shape.body, poles[1].body, a=(50, 50))
@@ -59,9 +60,12 @@ def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
 
 
 human_plays = False
-visualise = False  # can't be False if human_plays is True
+visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
-replay = False
+replay = True
+
+blue = [0, 0, 255]
+red = [255, 0, 0]
 
 global running
 global cart_speed
@@ -76,7 +80,7 @@ def main():
     if replay:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
-        population.organisms[0] = NeuralNetwork.load("dpb_champ_ver2.json")
+        population.organisms[0] = NeuralNetwork.load("dpb_champ_ver4.json")
     elif human_plays:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
@@ -98,6 +102,7 @@ def main():
             screen = pygame.display.set_mode((600, 600))
             clock = pygame.time.Clock()
             draw_options = pymunk.pygame_util.DrawOptions(screen)
+            # time.sleep(10)
 
         for organism in population.organisms:
             global cart_speed
@@ -115,14 +120,17 @@ def main():
 
                 if human_plays:
                     for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            running = False
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_LEFT:
                                 cart_speed = -1
                             if event.key == pygame.K_RIGHT:
                                 cart_speed = 1
                 else:
+                    if visualise:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                sys.exit()
+
                     count = count % decision_frequency
 
                     if count == 0:
@@ -150,7 +158,7 @@ def main():
                         # print(cart_speed)
 
                         organism.fitness += 1
-                        if organism.fitness > 500:
+                        if organism.fitness > config.MIN_SOLUTION_FITNESS:
                             break
 
                     count += 1
@@ -171,6 +179,11 @@ def main():
                     screen.fill((127, 127, 127))
                     pygame.draw.line(screen, (0, 0, 0), (r, 0), (r, 600), width=3)
                     pygame.draw.line(screen, (0, 0, 0), (600 - r, 0), (600 - r, 600), width=3)
+                    if cart_speed < 0:
+                        color = blue
+                    else:
+                        color = red
+                    pygame.draw.line(screen, color, (300 + 50 * cart_speed, 100), (300, 100), width=10)
                     space.debug_draw(draw_options)
                     pygame.display.update()
                     clock.tick(120)
@@ -191,7 +204,7 @@ def main():
             std_fitness.append(np.std(observed_fitness))
             population.update_champion()
             champion_fitness.append(-population.champion.fitness)
-            if population.champion.fitness < -500:
+            if population.champion.fitness < -config.MIN_SOLUTION_FITNESS:
                 break
 
             population.create_species()
@@ -230,7 +243,7 @@ def main():
         # plt.legend()
         # plt.show()
 
-        population.champion.save("dpb_champ_ver2.json")
+        population.champion.save("dpb_champ_ver4.json")
 
 
 if __name__ == "__main__":

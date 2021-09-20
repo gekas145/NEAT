@@ -7,8 +7,8 @@ DISABLE_GENE_PROBABILITY = 0.75  # default 0.75
 # mutations parameters
 MUTATE_WEIGHT_PROBABILITY = 0.8
 RESET_WEIGHT_PROBABILITY = 0.1
-ADD_NODE_PROBABILITY = 0.0005
-ADD_CONNECTION_PROBABILITY = 0.002
+ADD_NODE_PROBABILITY = 0.001  # 0.0015
+ADD_CONNECTION_PROBABILITY = 0.002  # 0.003
 CROSSOVER_PROBABILITY = 0.75
 
 # species division parameters
@@ -22,10 +22,10 @@ MIN_GENOME_LENGTH = 20
 MAX_STALENESS = 2000
 
 # pole balancing rewards and penalties
-OUT_OF_FIELD_PENALTY = 0
-OUT_OF_ANGLE_PENALTY = 0
-CENTER_ACCEPTABLE_DEVIATION = 0.0  # float from [0, 1]
-CENTER_REWARD = 10  # reward for not going off center more then CENTER_ACCEPTABLE_DEVIATION
+OUT_OF_FIELD_PENALTY = 0  # not used after all
+OUT_OF_ANGLE_PENALTY = 0  # not used after all
+CENTER_ACCEPTABLE_DEVIATION = 0.0  # float from [0, 1], not used after all
+CENTER_REWARD = 10  # reward for not going off center more then CENTER_ACCEPTABLE_DEVIATION, not used after all
 USUAL_REWARD = 1
 
 # network parameters(used for pole balancing)
@@ -38,3 +38,4 @@ DECISION_THRESHOLD = 0  # used when OUTPUTS_NUM == 1
 EPOCHS = 300
 ORGANISMS_NUM = 150  # cardinality of the population
 TYPE = 1  # used for double pole balancing task when OUTPUTS_NUM == 1(Note: ACTIVATION_FUNCTION must be tanh then)
+MIN_SOLUTION_FITNESS = 1000  # minimum fitness solution should have
