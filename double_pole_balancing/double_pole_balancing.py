@@ -64,8 +64,11 @@ visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
 replay = True
 
+wait_before_replay = False  # makes recording easier
 blue = [0, 0, 255]
 red = [255, 0, 0]
+load_path = "dpb_champ_ver4.json"  # path from which the network for simulation is loaded
+save_champ_path = "dpb_champ_ver4.json"  # path to which the overall champion will be saved
 
 global running
 global cart_speed
@@ -80,7 +83,7 @@ def main():
     if replay:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
-        population.organisms[0] = NeuralNetwork.load("dpb_champ_ver4.json")
+        population.organisms[0] = NeuralNetwork.load(load_path)
     elif human_plays:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
@@ -102,7 +105,8 @@ def main():
             screen = pygame.display.set_mode((600, 600))
             clock = pygame.time.Clock()
             draw_options = pymunk.pygame_util.DrawOptions(screen)
-            # time.sleep(10)
+            if wait_before_replay:
+                time.sleep(10)
 
         for organism in population.organisms:
             global cart_speed
@@ -243,7 +247,7 @@ def main():
         # plt.legend()
         # plt.show()
 
-        population.champion.save("dpb_champ_ver4.json")
+        population.champion.save(save_champ_path)
 
 
 if __name__ == "__main__":
