@@ -7,7 +7,6 @@ from neat.Node import Node
 from neat.Species import Species
 import neat.config as c
 from math import floor
-import numpy as np
 
 
 class Population:

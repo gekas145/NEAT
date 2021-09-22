@@ -19,13 +19,13 @@ AVERAGE_WEIGHT_DIFF_COEFF = 0.5
 MIN_GENOME_LENGTH = 20
 
 # selection parameters
-MAX_STALENESS = 2000
+MAX_STALENESS = 2000  # one may turn on but was not used during the experiments
 
 # pole balancing rewards and penalties
-OUT_OF_FIELD_PENALTY = 0
-OUT_OF_ANGLE_PENALTY = 0
-CENTER_ACCEPTABLE_DEVIATION = 0.0  # float from [0, 1]
-CENTER_REWARD = 10  # reward for not going off center more then CENTER_ACCEPTABLE_DEVIATION
+OUT_OF_FIELD_PENALTY = 0  # not used
+OUT_OF_ANGLE_PENALTY = 0  # not used
+CENTER_ACCEPTABLE_DEVIATION = 0.0  # not used, float from [0, 1]
+CENTER_REWARD = 10  # not used, reward for not going off center more then CENTER_ACCEPTABLE_DEVIATION
 USUAL_REWARD = 1
 
 # network parameters(used for pole balancing)

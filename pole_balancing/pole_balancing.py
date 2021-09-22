@@ -8,10 +8,11 @@ from math import pi
 from matplotlib import pyplot as plt
 from neat.NeuralNetwork import NeuralNetwork
 import time
-import neat.config as config
+import neat.pb_config as config
 from PivotJoint import PivotJoint
 from Pole import Pole
 from progress_bar import printProgressBar
+import sys
 
 
 def init():
@@ -57,6 +58,11 @@ visualise = True  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
 replay = True
 
+wait_before_replay = False  # makes recording easier
+load_path = "champ_ver3.json"  # path from which the network for simulation is loaded
+save_champ_path = "champ_ver3.json"  # path to which the overall champion will be saved
+
+
 w, h = 300, 100  # cart parameters
 r = 60  # border parameter
 
@@ -66,7 +72,7 @@ def main():
     if replay:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
-        population.organisms[0] = NeuralNetwork.load("champ_ver2.json")
+        population.organisms[0] = NeuralNetwork.load(load_path)
     elif human_plays:
         epochs = 1
         population = Population(1, config.INPUTS_NUM, config.OUTPUTS_NUM)
@@ -87,6 +93,8 @@ def main():
             screen = pygame.display.set_mode((600, 600))
             clock = pygame.time.Clock()
             draw_options = pymunk.pygame_util.DrawOptions(screen)
+            if wait_before_replay:
+                time.sleep(10)
 
         for organism in population.organisms:
             cart_speed = 0
@@ -103,13 +111,18 @@ def main():
                 if human_plays:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
-                            running = False
+                            sys.exit()
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_LEFT:
                                 cart_speed = -1
                             if event.key == pygame.K_RIGHT:
                                 cart_speed = 1
                 else:
+                    if visualise:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                sys.exit()
+
                     count = count % decision_frequency
 
                     if count == 0:
@@ -214,7 +227,7 @@ def main():
         plt.legend()
         plt.show()
 
-        population.champion.save("champ_ver3.json")
+        population.champion.save(save_champ_path)
 
 
 if __name__ == "__main__":
