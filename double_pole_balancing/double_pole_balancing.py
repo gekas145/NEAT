@@ -60,9 +60,9 @@ def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
 
 
 human_plays = False
-visualise = True  # can't be False if human_plays is True
+visualise = False  # can't be False if human_plays is True
 decision_frequency = 20  # how often will net be asked for decision(must be int)
-replay = True
+replay = False
 
 wait_before_replay = False  # makes recording easier
 blue = [0, 0, 255]

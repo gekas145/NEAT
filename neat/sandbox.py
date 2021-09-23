@@ -1,3 +1,4 @@
+# File for quick tests
 import copy
 import random
 import numpy as np
@@ -13,9 +14,11 @@ from random import uniform, sample
 
 from Population import Population
 
+net = Population(1, 5, 1).organisms[0]
 
-# net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/double_pole_balancing/dpb_champ_ver4.json")
-net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/pole_balancing/champ_ver3.json")
+net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/double_pole_balancing/dpb_champ_ver4.json")
+# net1 = nn.load("C:/Users/yevhe/PycharmProjects/NEAT/pole_balancing/champ_ver3.json")
 net1.draw()
 print(net1)
 print(net1.fitness)
+print(net.get_difference(net1))

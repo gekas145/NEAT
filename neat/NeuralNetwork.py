@@ -279,14 +279,10 @@ class NeuralNetwork:
 
         this = copy.deepcopy(self.connections)
         that = copy.deepcopy(net.connections)
-        this_conn = None
-        that_conn = None
+        this_conn = this.pop(0)
+        that_conn = that.pop(0)
 
-        while len(this) != 0 and len(that) != 0:
-            if this_conn is None:
-                this_conn = this.pop(0)
-            if that_conn is None:
-                that_conn = that.pop(0)
+        while this_conn is not None and that_conn is not None:
 
             if this_conn.innovation_number > that_conn.innovation_number:
                 D += 1
@@ -299,6 +295,11 @@ class NeuralNetwork:
             else:
                 D += 1
                 this_conn = None
+
+            if this_conn is None and len(this) != 0:
+                this_conn = this.pop(0)
+            if that_conn is None and len(that) != 0:
+                that_conn = that.pop(0)
 
         E += len(this) + len(that)
 
