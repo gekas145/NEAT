@@ -13,7 +13,7 @@ def evaluate_xor(organism):
         for b in range(2):
             output_val = organism.feedforward([a, b])[0].output_val
             fitness -= (output_val - xor(a, b)) ** 2
-    organism.fitness = -fitness  # minus sign because of sorting specifics
+    organism.fitness = -fitness  # minus sign because of sorting in natural selection specifics
 
 
 def main():
