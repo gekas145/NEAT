@@ -158,7 +158,6 @@ def main():
                                     cart_speed = -1
                             else:
                                 cart_speed = res[0].output_val * 3
-                        # print(cart_speed)
 
                         organism.fitness += 1
                         if organism.fitness > config.MIN_SOLUTION_FITNESS:
@@ -211,7 +210,6 @@ def main():
                 break
 
             population.create_species()
-            # print(len(population.species))
 
             population.natural_selection()
 
@@ -238,13 +236,6 @@ def main():
         plt.legend()
         plt.show()
 
-        # plt.title("Defeat causes in pole balancing")
-        # plt.xlabel("Generation")
-        # plt.ylabel("Number")
-        # plt.plot(x, defeat_cause[0], color='y', label='angle out')
-        # plt.plot(x, defeat_cause[1], color='b', label='field out')
-        # plt.legend()
-        # plt.show()
 
         population.champion.save(save_champ_path)
 
