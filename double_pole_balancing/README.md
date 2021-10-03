@@ -13,6 +13,6 @@ The learning curve of harder version with y-gravity of 30 looks like this:
 
 <img src="https://github.com/gekas145/NEAT/blob/main/plots/dpb_ver4.png" alt="drawing" width="500" height="400"/>
 
-The champion of harder version with y-gravity of 30 has achieved score of 178(more than 3500 iterations) and part of its simulation is presented below.
+The champion of harder version with y-gravity of 30 has achieved score of 178(more than 3500 iterations) and its simulation is presented below.
 
 <img src="https://github.com/gekas145/NEAT/blob/main/recorded_simulations/dpb_ver4.gif" alt="drawing" width="500" height="400"/>
