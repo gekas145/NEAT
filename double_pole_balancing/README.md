@@ -5,4 +5,6 @@ The learning curve looks like this:
 
 <img src="https://github.com/gekas145/NEAT/blob/main/plots/dpb_ver3.png" alt="drawing" width="500" height="400"/>
 
-The champion of lighter version with y-gravity of 10 has achieved score of 1001(more than 30 000 iterations).
+The champion of lighter version with y-gravity of 10 has achieved score of 1001(more than 30 000 iterations) and part of its simulation is presented below.
+
+<img src="https://github.com/gekas145/NEAT/blob/main/recorded_simulations/dpb_ver3.gif" alt="drawing" width="500" height="400"/>
