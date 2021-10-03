@@ -3,6 +3,6 @@ This task required the ai to learn how to balance 2 poles of length 100 and 250.
 
 The learning curve looks like this:
 
-<img src="plots/dpb_ver3.png" alt="drawing" width="200" height="200"/>
+<img src="https://github.com/gekas145/NEAT/blob/main/plots/dpb_ver3.png" alt="drawing" width="200" height="200"/>
 
 The champion of lighter version with y-gravity of 10 has achieved score of 1001(more than 30 000 iterations).
