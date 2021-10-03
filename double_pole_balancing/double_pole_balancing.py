@@ -35,7 +35,6 @@ def init():
 
     p = Vec2d(450, 540)
     v = Vec2d(0, -250)
-    # p1 = Vec2d(275, 540)
     p1 = Vec2d(250, 540)
     v1 = Vec2d(0, -100)
     poles = [Pole(space, p, v), Pole(space, p1, v1, color=(148, 78, 78, 0))]
@@ -61,7 +60,7 @@ def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
 
 human_plays = False
 visualise = True  # can't be False if human_plays is True
-decision_frequency = 20  # how often will net be asked for decision(must be int)
+decision_frequency = 20  # how often will net be asked for decision(must be int > 0)
 replay = True
 
 wait_before_replay = False  # makes recording easier
