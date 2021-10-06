@@ -87,7 +87,6 @@ def main():
 
     for i in range(epochs):
         observed_fitness = []
-        # sys.stdout.write("\r---------------------- EPOCH:" + str(i))
         if visualise:
             pygame.init()
             screen = pygame.display.set_mode((600, 600))
