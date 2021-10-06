@@ -7,7 +7,7 @@ This task required the ai to learn how to balance single pole of length 177. The
   <img src="https://github.com/gekas145/NEAT/blob/main/plots/pb_ver3_defeat_causes.png" alt="drawing" width="500" height="400"/>
 </p>
 
-On the right graph one can see that majority of the population has learned how to balance and was mainly loosing because of going off the field constraints. Learning of how to avoid the field edges was pretty hard as at the very beginning organisms only learn how to balance the pole and rarely get to the edges. There was a try to increase the reward if cart center remained "not far" from the field center, but it was only helpful for learning where the center is not how to avoid field edges.
+On the right graph one can see that majority of the population has learned how to balance and was mainly loosing because of going off the field constraints. Learning of how to avoid the field edges was pretty hard as at the very beginning organisms only learn how to balance the pole and rarely get to the edges. There was a try to increase the reward if cart center remained "not far" from the field center, but it was only helpful for learning where the center is, not how to the avoid field edges.
 
 The ultimate champion has achieved score of 1319(more than 26 000 iterations) and part of its simulation is presented below.
 
