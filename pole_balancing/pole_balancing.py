@@ -144,7 +144,6 @@ def main():
                                 cart_speed = 1
                             else:
                                 cart_speed = -1
-                        # print(cart_speed)
 
                         if abs(cart_pos) < config.CENTER_ACCEPTABLE_DEVIATION:
                             organism.fitness += config.CENTER_REWARD
@@ -175,7 +174,6 @@ def main():
 
                 space.step(1 / 50)
 
-            # print(organism.fitness)
             observed_fitness.append(organism.fitness)
             organism.fitness *= -1
 
@@ -191,7 +189,6 @@ def main():
             champion_fitness.append(-population.champion.fitness)
 
             population.create_species()
-            # print(len(population.species))
 
             population.natural_selection()
 

@@ -45,7 +45,6 @@ def init():
 
 
 def check_game_over(angle, angle1, cart_pos, bound=pi / 6):
-
     if angle < -bound or angle > bound:
         return False, 0
 
@@ -98,7 +97,6 @@ def main():
     for i in range(epochs):
         passed_epochs += 1
         observed_fitness = []
-        # sys.stdout.write("\r---------------------- EPOCH:" + str(i))
         if visualise:
             pygame.init()
             screen = pygame.display.set_mode((600, 600))
@@ -192,7 +190,6 @@ def main():
 
                 space.step(1 / 50)
 
-            # print(organism.fitness)
             observed_fitness.append(organism.fitness)
             organism.fitness *= -1
 
@@ -235,7 +232,6 @@ def main():
         plt.title("Champion vs Average for pole balancing")
         plt.legend()
         plt.show()
-
 
         population.champion.save(save_champ_path)
 

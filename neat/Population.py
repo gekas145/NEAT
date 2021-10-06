@@ -51,7 +51,6 @@ class Population:
 
     def add_connection(self, net):
         if net.is_fully_connected():
-            # print("failed")
             return
 
         node1, node2 = sample(net.nodes, 2)
@@ -99,10 +98,6 @@ class Population:
                 if species.representative.get_difference(organism) < c.COMPATIBILITY_THRESHOLD:
                     species.organisms.append(organism)
                     added = True
-
-                    # if organism.fitness > species.representative.fitness:
-                    #     species.representative = organism.copy()
-
                     break
 
             if not added:
@@ -126,7 +121,6 @@ class Population:
                 self.species[i].staleness += 1
 
             if self.species[i].staleness == c.MAX_STALENESS:
-                # print(self.species[i].staleness)
                 to_delete.append(i)
             else:  # delete the bottom half
                 self.species[i].organisms = self.species[i].organisms[0:len(self.species[i].organisms) // 2 + 1]
@@ -137,8 +131,6 @@ class Population:
 
         for i in range(len(to_delete) - 1, -1, -1):
             self.species.pop(to_delete[i])
-            # if i < len(to_delete) - 1:
-            #     to_delete[i+1:len(to_delete)] -= 1
 
         self.prepare_species()
 
@@ -192,6 +184,3 @@ class Population:
                 self.champion = organism.copy()
                 self.champion.fitness = organism.fitness
                 updated = True
-
-        # if updated:
-        #     print("CHAMPION UPDATED")

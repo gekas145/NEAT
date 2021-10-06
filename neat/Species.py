@@ -17,11 +17,9 @@ class Species:
         for organism in self.organisms:
             self.average_fitness += organism.shared_fitness
 
-        # print(len(self.organisms))
         self.average_fitness /= len(self.organisms)
 
     def prepare(self):
-        # self.calculate_average_fitness()
         self.organisms.sort(key=lambda x: x.fitness)
         self.representative = self.organisms[0].copy()
 
