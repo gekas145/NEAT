@@ -18,7 +18,7 @@ gray = (127, 127, 127)
 field_width, field_height = 600, 600
 
 trex = pymunk.Body(1, 1, pymunk.Body.DYNAMIC)
-trex.position = (100, 300)
+trex.position = (50, 510)
 trex_shape = pymunk.Circle(trex, 80)
 space.add(trex_shape, trex)
 
@@ -37,18 +37,21 @@ draw_options = pymunk.pygame_util.DrawOptions(screen)
 
 trex_up_images = []
 trex_down_images = []
+cactuses = []
 trex_up_images.append(pygame.image.load('dino_right.png'))
 trex_up_images.append(pygame.image.load('dino_left.png'))
 trex_down_images.append(pygame.image.load('dino_down_left.png'))
 trex_down_images.append(pygame.image.load('dino_down_right.png'))
 trex_current_images = trex_up_images.copy()
-# trex_img = pygame.transform.scale(trex_img, (70, 70))
+cactuses1 = pygame.image.load('cactuses.png')
+cactuses1 = pygame.transform.scale(cactuses1, (120, 80))
+cactuses.append(cactuses1)
 change_freq_trex_image = 20
 freq_count_trex_image = 0
 current_trex_image_num = 0
 
-cactuses = []
 cactuses_speed = 3
+current_cactus = pygame.Rect(field_width, 520, 120, 30)
 
 while True:
     freq_count_trex_image += 1
@@ -63,7 +66,7 @@ while True:
             pass
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                # print(trex.position[1])
+                # print(trex.position)
                 if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, -210), (0, 0))
             if event.key == pygame.K_DOWN:
@@ -79,16 +82,11 @@ while True:
     clock.tick(100)
     space.step(1 / 50)
 
-    cactuses_to_pop = -1
-    if len(cactuses) == 0:
-        cactuses.append(pygame.Rect(field_width, 570, 30, 30))
-    if len(cactuses) != 0:
-        for index, cactus in enumerate(cactuses):
-            cactus.x -= cactuses_speed
-            if cactus.x < 0:
-                cactuses_to_pop = index
-            pygame.draw.rect(screen, rect=cactuses[0], color=[0, 0, 0])
-    if cactuses_to_pop != -1:
-        cactuses.pop(cactuses_to_pop)
+    if current_cactus.x + current_cactus.width <= 0:
+        current_cactus = pygame.Rect(field_width, 520, 120, 30)
+    else:
+        current_cactus.x -= cactuses_speed
+        # pygame.draw.rect(screen, rect=current_cactus, color=[0, 0, 0])
+        screen.blit(cactuses[0], (current_cactus.x, current_cactus.y))
 
     pygame.display.update()
