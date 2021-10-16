@@ -15,6 +15,7 @@ space.gravity = 0, 180
 space.damping = 1
 
 gray = (127, 127, 127)
+black = (0, 0, 0)
 field_width, field_height = 600, 600
 
 trex = pymunk.Body(1, 1, pymunk.Body.DYNAMIC)
@@ -43,6 +44,9 @@ trex_up_images.append(pygame.image.load('dino_left.png'))
 trex_down_images.append(pygame.image.load('dino_down_left.png'))
 trex_down_images.append(pygame.image.load('dino_down_right.png'))
 trex_current_images = trex_up_images.copy()
+trex_hitbox = pygame.Rect(trex.position, (80, 80))
+trex_down = False
+
 cactuses1 = pygame.image.load('cactuses.png')
 cactuses1 = pygame.transform.scale(cactuses1, (120, 80))
 cactuses.append(cactuses1)
@@ -54,6 +58,12 @@ cactuses_speed = 3
 current_cactus = pygame.Rect(field_width, 520, 120, 30)
 
 while True:
+    if trex_down:
+        trex_hitbox.y = trex.position[1] + 30
+    else:
+        trex_hitbox.x = trex.position[0] + 10
+        trex_hitbox.y = trex.position[1] + 7
+
     freq_count_trex_image += 1
     freq_count_trex_image = freq_count_trex_image % change_freq_trex_image
     if freq_count_trex_image == 0:
@@ -73,12 +83,20 @@ while True:
                 if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, 500), (0, 0))
                 trex_current_images = trex_down_images.copy()
+                trex_hitbox = pygame.Rect(trex.position, (120, 60))
+                trex_down = True
+                trex_hitbox.y = trex.position[1] + 30
         if event.type == pygame.KEYUP:
             trex_current_images = trex_up_images.copy()
+            trex_hitbox = pygame.Rect(trex.position, (80, 80))
+            trex_down = False
+            trex_hitbox.x = trex.position[0] + 10
+            trex_hitbox.y = trex.position[1] + 7
 
     screen.fill(gray)
     # space.debug_draw(draw_options)
     screen.blit(trex_current_images[current_trex_image_num], trex.position)
+    pygame.draw.rect(screen, black, trex_hitbox, width=2)
     clock.tick(100)
     space.step(1 / 50)
 
