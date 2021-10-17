@@ -2,6 +2,7 @@ import pygame
 import pymunk
 from pymunk.pygame_util import DrawOptions
 import sys
+from random import uniform
 
 
 # help function
@@ -36,30 +37,26 @@ screen = pygame.display.set_mode((field_width, field_height))
 clock = pygame.time.Clock()
 draw_options = pymunk.pygame_util.DrawOptions(screen)
 
-trex_up_images = []
-trex_down_images = []
-cactuses = []
-trex_up_images.append(pygame.image.load('dino_right.png'))
-trex_up_images.append(pygame.image.load('dino_left.png'))
-trex_down_images.append(pygame.image.load('dino_down_left.png'))
-trex_down_images.append(pygame.image.load('dino_down_right.png'))
+trex_up_images = [pygame.image.load('images/dino_right.png'), pygame.image.load('images/dino_left.png')]
+trex_down_images = [pygame.image.load('images/dino_down_left.png'), pygame.image.load('images/dino_down_right.png')]
 trex_current_images = trex_up_images.copy()
-trex_hitbox = pygame.Rect(trex.position, (80, 80))
+trex_hitbox = pygame.Rect(trex.position, (65, 70))
 trex_down = False
-
-cactuses1 = pygame.image.load('cactuses.png')
-cactuses1 = pygame.transform.scale(cactuses1, (120, 80))
-cactuses.append(cactuses1)
 change_freq_trex_image = 20
 freq_count_trex_image = 0
 current_trex_image_num = 0
 
+cactuses = [pygame.transform.scale(pygame.image.load('images/cactuses.png'), (120, 80)),
+            pygame.transform.scale(pygame.image.load('images/cactuses1.png'), (50, 80))]
+cactuses_hitboxes = [pygame.Rect(field_width, 520, 120, 90),
+                     pygame.Rect(field_width, 525, 47, 75)]
+current_hindrance = cactuses_hitboxes[0].copy()
+current_hindrance_image = cactuses[0].copy()
 cactuses_speed = 3
-current_cactus = pygame.Rect(field_width, 520, 120, 30)
 
 while True:
     if trex_down:
-        trex_hitbox.y = trex.position[1] + 30
+        trex_hitbox.y = trex.position[1] + 45
     else:
         trex_hitbox.x = trex.position[0] + 10
         trex_hitbox.y = trex.position[1] + 7
@@ -78,17 +75,17 @@ while True:
             if event.key == pygame.K_UP:
                 # print(trex.position)
                 if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
-                    trex.apply_impulse_at_local_point((0, -210), (0, 0))
+                    trex.apply_impulse_at_local_point((0, -230), (0, 0))
             if event.key == pygame.K_DOWN:
                 if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, 500), (0, 0))
                 trex_current_images = trex_down_images.copy()
-                trex_hitbox = pygame.Rect(trex.position, (120, 60))
+                trex_hitbox = pygame.Rect(trex.position, (120, 40))
                 trex_down = True
-                trex_hitbox.y = trex.position[1] + 30
+                trex_hitbox.y = trex.position[1] + 45
         if event.type == pygame.KEYUP:
             trex_current_images = trex_up_images.copy()
-            trex_hitbox = pygame.Rect(trex.position, (80, 80))
+            trex_hitbox = pygame.Rect(trex.position, (65, 70))
             trex_down = False
             trex_hitbox.x = trex.position[0] + 10
             trex_hitbox.y = trex.position[1] + 7
@@ -97,14 +94,20 @@ while True:
     # space.debug_draw(draw_options)
     screen.blit(trex_current_images[current_trex_image_num], trex.position)
     pygame.draw.rect(screen, black, trex_hitbox, width=2)
+    pygame.draw.rect(screen, black, current_hindrance, width=2)
     clock.tick(100)
     space.step(1 / 50)
 
-    if current_cactus.x + current_cactus.width <= 0:
-        current_cactus = pygame.Rect(field_width, 520, 120, 30)
+    if current_hindrance.x + current_hindrance.width <= 0:
+        if uniform(0, 1) < 0.5:
+            current_hindrance = cactuses_hitboxes[0].copy()
+            current_hindrance_image = cactuses[0].copy()
+        else:
+            current_hindrance = cactuses_hitboxes[1].copy()
+            current_hindrance_image = cactuses[1].copy()
     else:
-        current_cactus.x -= cactuses_speed
+        current_hindrance.x -= cactuses_speed
         # pygame.draw.rect(screen, rect=current_cactus, color=[0, 0, 0])
-        screen.blit(cactuses[0], (current_cactus.x, current_cactus.y))
+        screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
 
     pygame.display.update()
