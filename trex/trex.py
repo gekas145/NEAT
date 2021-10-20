@@ -20,12 +20,13 @@ def calculate_trex_hitbox_pos():
         trex_hitbox.y = trex.position[1] + 7
 
 
-def draw_next_game_step():
+def draw_next_game_step(draw_hitboxes=True):
     screen.fill(gray)
     # space.debug_draw(draw_options)
-    screen.blit(trex_current_images[current_trex_image_num], trex.position)
-    pygame.draw.rect(screen, black, trex_hitbox, width=2)
-    pygame.draw.rect(screen, black, current_hindrance, width=2)
+    screen.blit(trex_current_images[current_image_num], trex.position)
+    if draw_hitboxes:
+        pygame.draw.rect(screen, black, trex_hitbox, width=2)
+        pygame.draw.rect(screen, black, current_hindrance, width=2)
     clock.tick(100)
 
 
@@ -68,20 +69,30 @@ trex_hitbox = pygame.Rect(trex.position, trex_up_hitbox_params)
 trex_down = False
 change_freq_trex_image = 20
 freq_count_trex_image = 0
-current_trex_image_num = 0
+current_image_num = 0
 
 cactuses = [pygame.transform.scale(pygame.image.load('images/cactuses.png'), (120, 80)),
             pygame.transform.scale(pygame.image.load('images/cactuses3.png'), (90, 80)),
             pygame.transform.scale(pygame.image.load('images/cactuses2.png'), (30, 50)),
             pygame.transform.scale(pygame.image.load('images/cactuses1.png'), (40, 70))]
+
 cactuses_hitboxes = [pygame.Rect(field_width, 520, 120, 90),
                      pygame.Rect(field_width, 525, 85, 80),
                      pygame.Rect(field_width, 550, 30, 50),
                      pygame.Rect(field_width, 530, 35, 70)]
+
+pterodactylus = [pygame.transform.scale(pygame.image.load('images/pterodactylus1.png'), (100, 60)),
+                 pygame.transform.scale(pygame.image.load('images/pterodactylus2.png'), (100, 60))]
+
+pterodactylus_hitboxes = [pygame.Rect(field_width, 460, 100, 50),
+                          pygame.Rect(field_width, 480, 100, 50),
+                          pygame.Rect(field_width, 540, 100, 50)]
+
 index = randint(0, len(cactuses) - 1)
 current_hindrance = cactuses_hitboxes[index].copy()
 current_hindrance_image = cactuses[index].copy()
-cactuses_speed = 3
+hindrance_speed = 3
+is_cactus = True
 
 while True:
     calculate_trex_hitbox_pos()
@@ -89,7 +100,10 @@ while True:
     freq_count_trex_image += 1
     freq_count_trex_image = freq_count_trex_image % change_freq_trex_image
     if freq_count_trex_image == 0:
-        current_trex_image_num = 1 - current_trex_image_num
+        current_image_num = 1 - current_image_num
+
+    if not is_cactus:
+        current_hindrance_image = pterodactylus[current_image_num].copy()
 
     action = None
     for event in pygame.event.get():
@@ -127,11 +141,17 @@ while True:
     space.step(1 / 50)
 
     if current_hindrance.x + current_hindrance.width <= 0:
-        new_hindrance_index = randint(0, len(cactuses) - 1)
-        current_hindrance = cactuses_hitboxes[new_hindrance_index].copy()
-        current_hindrance_image = cactuses[new_hindrance_index].copy()
+        if uniform(0, 1) < 0.5:
+            is_cactus = True
+            new_hindrance_index = randint(0, len(cactuses) - 1)
+            current_hindrance = cactuses_hitboxes[new_hindrance_index].copy()
+            current_hindrance_image = cactuses[new_hindrance_index].copy()
+        else:
+            is_cactus = False
+            current_hindrance = pterodactylus_hitboxes[randint(0, len(pterodactylus_hitboxes) - 1)].copy()
+            current_hindrance_image = pterodactylus[0].copy()
     else:
-        current_hindrance.x -= cactuses_speed
+        current_hindrance.x -= hindrance_speed
         # pygame.draw.rect(screen, rect=current_cactus, color=[0, 0, 0])
         screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
 
