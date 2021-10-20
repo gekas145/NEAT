@@ -3,6 +3,7 @@ import pymunk
 from pymunk.pygame_util import DrawOptions
 import sys
 from random import uniform, randint
+from actions import Actions
 
 
 def quit_game():
@@ -90,6 +91,7 @@ while True:
     if freq_count_trex_image == 0:
         current_trex_image_num = 1 - current_trex_image_num
 
+    action = None
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit_game()
@@ -98,21 +100,28 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 # print(trex.position)
-                if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
-                    trex.apply_impulse_at_local_point((0, -230), (0, 0))
+                action = Actions.UP
             if event.key == pygame.K_DOWN:
-                if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
-                    trex.apply_impulse_at_local_point((0, 500), (0, 0))
-                trex_current_images = trex_down_images.copy()
-                trex_hitbox = pygame.Rect(trex.position, trex_down_hitbox_params)
-                trex_down = True
-                trex_hitbox.y = trex.position[1] + 45
+                action = Actions.DOWN
         if event.type == pygame.KEYUP:
-            trex_current_images = trex_up_images.copy()
-            trex_hitbox = pygame.Rect(trex.position, trex_up_hitbox_params)
-            trex_down = False
-            trex_hitbox.x = trex.position[0] + 10
-            trex_hitbox.y = trex.position[1] + 7
+            action = Actions.RELEASE_DOWN
+
+    if action == Actions.UP:
+        if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
+            trex.apply_impulse_at_local_point((0, -230), (0, 0))
+    elif action == Actions.DOWN:
+        if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
+            trex.apply_impulse_at_local_point((0, 500), (0, 0))
+        trex_current_images = trex_down_images.copy()
+        trex_hitbox = pygame.Rect(trex.position, trex_down_hitbox_params)
+        trex_down = True
+        trex_hitbox.y = trex.position[1] + 45
+    elif action == Actions.RELEASE_DOWN:
+        trex_current_images = trex_up_images.copy()
+        trex_hitbox = pygame.Rect(trex.position, trex_up_hitbox_params)
+        trex_down = False
+        trex_hitbox.x = trex.position[0] + 10
+        trex_hitbox.y = trex.position[1] + 7
 
     draw_next_game_step()
     space.step(1 / 50)
