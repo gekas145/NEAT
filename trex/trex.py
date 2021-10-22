@@ -4,6 +4,7 @@ from pymunk.pygame_util import DrawOptions
 import sys
 from random import uniform, randint
 from actions import Actions
+from copy import deepcopy
 
 
 def quit_game():
@@ -13,11 +14,13 @@ def quit_game():
 
 
 def calculate_trex_hitbox_pos():
+    x, y = trex.position
     if trex_down:
-        trex_hitbox.y = trex.position[1] + 45
+        trex_current_hitboxes[0] = pygame.Rect((x + 70, y + 40), (45, 30)).copy()
+        trex_current_hitboxes[1] = pygame.Rect((x + 20, y + 45), (70, 30)).copy()
     else:
-        trex_hitbox.x = trex.position[0] + 10
-        trex_hitbox.y = trex.position[1] + 7
+        trex_current_hitboxes[0] = pygame.Rect((x + 50, y + 5), (40, 30)).copy()
+        trex_current_hitboxes[1] = pygame.Rect((x + 20, y + 25), (50, 45)).copy()
 
 
 def draw_next_game_step(draw_hitboxes=True):
@@ -25,13 +28,14 @@ def draw_next_game_step(draw_hitboxes=True):
     # space.debug_draw(draw_options)
     screen.blit(trex_current_images[current_image_num], trex.position)
     if draw_hitboxes:
-        pygame.draw.rect(screen, black, trex_hitbox, width=2)
+        pygame.draw.rect(screen, black, trex_current_hitboxes[0], width=2)
+        pygame.draw.rect(screen, black, trex_current_hitboxes[1], width=2)
         pygame.draw.rect(screen, black, current_hindrance, width=2)
     clock.tick(100)
 
 
-def collision_happened():
-    return trex_hitbox.colliderect(current_hindrance)
+# def collision_happened():
+#     return trex_current_hitboxes.colliderect(current_hindrance)
 
 
 space = pymunk.Space()
@@ -63,10 +67,11 @@ draw_options = pymunk.pygame_util.DrawOptions(screen)
 trex_up_images = [pygame.image.load('images/dino_right.png'), pygame.image.load('images/dino_left.png')]
 trex_down_images = [pygame.image.load('images/dino_down_left.png'), pygame.image.load('images/dino_down_right.png')]
 trex_current_images = trex_up_images.copy()
-trex_up_hitbox_params = (65, 70)
-trex_down_hitbox_params = (120, 40)
-trex_hitbox = pygame.Rect(trex.position, trex_up_hitbox_params)
 trex_down = False
+trex_hitboxes = [[pygame.Rect((0, 0), (45, 30)), pygame.Rect((0, 0), (70, 30))],
+                [pygame.Rect((0, 0), (40, 30)), pygame.Rect((0, 0), (50, 45))]]
+trex_current_hitboxes = deepcopy(trex_hitboxes[0])
+calculate_trex_hitbox_pos()
 change_freq_trex_image = 20
 freq_count_trex_image = 0
 current_image_num = 0
@@ -86,7 +91,7 @@ pterodactylus = [pygame.transform.scale(pygame.image.load('images/pterodactylus1
 
 pterodactylus_hitboxes = [pygame.Rect(field_width, 460, 100, 50),
                           pygame.Rect(field_width, 480, 100, 50),
-                          pygame.Rect(field_width, 540, 100, 50)]
+                          pygame.Rect(field_width, 540, 100, 60)]
 
 index = randint(0, len(cactuses) - 1)
 current_hindrance = cactuses_hitboxes[index].copy()
@@ -127,15 +132,14 @@ while True:
         if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
             trex.apply_impulse_at_local_point((0, 500), (0, 0))
         trex_current_images = trex_down_images.copy()
-        trex_hitbox = pygame.Rect(trex.position, trex_down_hitbox_params)
+        trex_current_hitboxes = deepcopy(trex_hitboxes[1])
         trex_down = True
-        trex_hitbox.y = trex.position[1] + 45
+        calculate_trex_hitbox_pos()
     elif action == Actions.RELEASE_DOWN:
         trex_current_images = trex_up_images.copy()
-        trex_hitbox = pygame.Rect(trex.position, trex_up_hitbox_params)
+        trex_current_hitboxes = deepcopy(trex_hitboxes[0])
         trex_down = False
-        trex_hitbox.x = trex.position[0] + 10
-        trex_hitbox.y = trex.position[1] + 7
+        calculate_trex_hitbox_pos()
 
     draw_next_game_step()
     space.step(1 / 50)
