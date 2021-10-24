@@ -52,6 +52,7 @@ space.damping = 1
 gray = (127, 127, 127)
 black = (0, 0, 0)
 red = (255, 0, 0)
+dino_color = (54, 54, 54)
 
 field_width, field_height = 600, 600
 
@@ -68,10 +69,15 @@ floor_shape.elasticity = 0.7
 floor_shape.friction = 0.3
 space.add(floor, floor_shape)
 
+pygame.font.init()
+myfont = pygame.font.SysFont('Comic Sans MS', 20)
+
 pygame.init()
 screen = pygame.display.set_mode((field_width, field_height))
 clock = pygame.time.Clock()
 draw_options = pymunk.pygame_util.DrawOptions(screen)
+
+game_over_image = pygame.transform.scale(pygame.image.load('images/game_over.png'), (270, 40))
 
 trex_up_images = [pygame.image.load('images/dino_right.png'), pygame.image.load('images/dino_left.png')]
 trex_down_images = [pygame.image.load('images/dino_down_left.png'), pygame.image.load('images/dino_down_right.png')]
@@ -111,14 +117,26 @@ current_hindrance = cactuses_hitboxes[index].copy()
 current_hindrance_image = cactuses[index].copy()
 hindrance_speed = 3
 is_cactus = True
+score = 0
 
 while True:
+
     calculate_trex_hitbox_pos()
 
     freq_count_trex_image += 1
+
     freq_count_trex_image = freq_count_trex_image % change_freq_trex_image
     if freq_count_trex_image == 0:
         current_image_num = 1 - current_image_num
+        score += 1
+        if score == 50:
+            hindrance_speed += 1
+        elif score == 100:
+            hindrance_speed += 1
+        elif score == 150:
+            hindrance_speed += 1
+        elif score == 200:
+            hindrance_speed += 1
 
     if not is_cactus:
         current_hindrance_image = pterodactylus[current_image_num].copy()
@@ -185,7 +203,15 @@ while True:
         # pygame.draw.rect(screen, rect=current_cactus, color=[0, 0, 0])
         screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
 
+    screen.blit(myfont.render('Score: ' + str(score), False, dino_color), (field_width - 150, field_height/3))
+
     pygame.display.update()
 
     if collision_happened():
-        quit_game()
+        while True:
+            screen.blit(game_over_image, (field_width/2 - 120, field_height/2))
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit_game()
+        # quit_game()
