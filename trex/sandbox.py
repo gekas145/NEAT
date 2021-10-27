@@ -1,9 +1,7 @@
 from trex import TRexGame
 
-for i in range(2):
-    game = TRexGame(None)
-    game.play_game()
-
+game = TRexGame(None, True)
+game.play_game()
 
 
 

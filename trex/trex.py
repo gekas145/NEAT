@@ -1,6 +1,5 @@
 import pygame
 import pymunk
-from pymunk.pygame_util import DrawOptions
 import sys
 from random import uniform, randint
 from actions import Actions
@@ -20,7 +19,7 @@ class TRexGame:
         def quit_game():
             pygame.display.quit()
             pygame.quit()
-            # sys.exit()
+            sys.exit()
 
         def calculate_trex_hitbox_pos():
             x, y = trex.position
@@ -33,7 +32,6 @@ class TRexGame:
 
         def draw_next_game_step(draw_hitboxes=True):
             screen.fill(gray)
-            # space.debug_draw(draw_options)
             screen.blit(trex_current_images[current_image_num], trex.position)
             if draw_hitboxes:
                 pygame.draw.rect(screen, black, trex_current_hitboxes[0], width=2)
@@ -78,7 +76,6 @@ class TRexGame:
         pygame.init()
         screen = pygame.display.set_mode((field_width, field_height))
         clock = pygame.time.Clock()
-        draw_options = pymunk.pygame_util.DrawOptions(screen)
 
         game_over_image = pygame.transform.scale(pygame.image.load('images/game_over.png'), (270, 40))
 
@@ -150,7 +147,6 @@ class TRexGame:
                     pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        # print(trex.position)
                         action = Actions.UP
                     if event.key == pygame.K_DOWN:
                         action = Actions.DOWN
@@ -160,14 +156,14 @@ class TRexGame:
             if action == Actions.UP:
                 if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, -230), (0, 0))
-            elif action == Actions.DOWN:
+            if action == Actions.DOWN:
                 if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, 500), (0, 0))
                 trex_current_images = trex_down_images.copy()
                 trex_current_hitboxes = deepcopy(trex_hitboxes[1])
                 trex_down = True
                 calculate_trex_hitbox_pos()
-            elif action == Actions.RELEASE_DOWN:
+            elif action == Actions.RELEASE_DOWN or action == Actions.UP:
                 trex_current_images = trex_up_images.copy()
                 trex_current_hitboxes = deepcopy(trex_hitboxes[0])
                 trex_down = False
@@ -201,7 +197,6 @@ class TRexGame:
                 current_hindrance.x -= hindrance_speed
                 if not is_cactus:
                     pterodactylus_current_body_hitbox.x -= hindrance_speed
-                # pygame.draw.rect(screen, rect=current_cactus, color=[0, 0, 0])
                 screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
 
             screen.blit(self.font.render('Score: ' + str(score), False, dino_color),
@@ -222,5 +217,6 @@ class TRexGame:
                             wait = False
                 quit_game()
                 continue_game = False
+
 
 
