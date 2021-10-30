@@ -8,7 +8,7 @@ from copy import deepcopy
 
 class TRexGame:
 
-    def __init__(self, agent):
+    def __init__(self, agent=None):
         pygame.font.init()
         self.font = pygame.font.SysFont('Comic Sans MS', 20)
         self.agent = agent
@@ -54,7 +54,6 @@ class TRexGame:
 
         gray = (127, 127, 127)
         black = (0, 0, 0)
-        red = (255, 0, 0)
         dino_color = (54, 54, 54)
 
         field_width, field_height = 600, 600
@@ -139,18 +138,22 @@ class TRexGame:
                 current_hindrance_image = pterodactylus[current_image_num].copy()
 
             action = None
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    quit_game()
-                if event.type == pygame.MOUSEBUTTONUP:
-                    pass
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        action = Actions.UP
-                    if event.key == pygame.K_DOWN:
-                        action = Actions.DOWN
-                if event.type == pygame.KEYUP:
-                    action = Actions.RELEASE_DOWN
+            if self.agent is None:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        quit_game()
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        pass
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            action = Actions.UP
+                        if event.key == pygame.K_DOWN:
+                            action = Actions.DOWN
+                    if event.type == pygame.KEYUP:
+                        action = Actions.RELEASE_DOWN
+            else:
+                if freq_count_trex_image == 0:
+                    action = self.agent.get_decision()
 
             if action == Actions.UP:
                 if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
