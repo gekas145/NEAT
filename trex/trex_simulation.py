@@ -6,19 +6,12 @@ from actions import Actions
 from copy import deepcopy
 
 
-class TRexGame:
+class TRexGameSimulator:
 
     def __init__(self, agent):
-        pygame.font.init()
-        self.font = pygame.font.SysFont('Comic Sans MS', 20)
         self.agent = agent
 
     def play_game(self):
-
-        def quit_game():
-            pygame.display.quit()
-            pygame.quit()
-            sys.exit()
 
         def calculate_trex_hitbox_pos():
             x, y = trex.position
@@ -29,17 +22,6 @@ class TRexGame:
                 trex_current_hitboxes[0] = pygame.Rect((x + 50, y + 5), (40, 30)).copy()
                 trex_current_hitboxes[1] = pygame.Rect((x + 20, y + 25), (50, 45)).copy()
 
-        def draw_next_game_step(draw_hitboxes=True):
-            screen.fill(gray)
-            screen.blit(trex_current_images[current_image_num], trex.position)
-            if draw_hitboxes:
-                pygame.draw.rect(screen, black, trex_current_hitboxes[0], width=2)
-                pygame.draw.rect(screen, black, trex_current_hitboxes[1], width=2)
-                pygame.draw.rect(screen, black, current_hindrance, width=2)
-                if not is_cactus:
-                    pygame.draw.rect(screen, black, pterodactylus_current_body_hitbox, width=2)
-            clock.tick(100)
-
         def collision_happened():
             for hitbox in trex_current_hitboxes:
                 if hitbox.colliderect(current_hindrance):
@@ -48,16 +30,11 @@ class TRexGame:
                     return True
             return False
 
+        field_width, field_height = 600, 600
+
         space = pymunk.Space()
         space.gravity = 0, 180
         space.damping = 1
-
-        gray = (127, 127, 127)
-        black = (0, 0, 0)
-        red = (255, 0, 0)
-        dino_color = (54, 54, 54)
-
-        field_width, field_height = 600, 600
 
         trex = pymunk.Body(1, 1, pymunk.Body.DYNAMIC)
         trex.position = (50, 510)
@@ -72,39 +49,18 @@ class TRexGame:
         floor_shape.friction = 0.3
         space.add(floor, floor_shape)
 
-        pygame.init()
-        screen = pygame.display.set_mode((field_width, field_height))
-        clock = pygame.time.Clock()
-
-        game_over_image = pygame.transform.scale(pygame.image.load('images/game_over.png'), (270, 40))
-
-        trex_game_over_image = pygame.transform.scale(pygame.image.load('images/dino_game_over.png'), (90, 95))
-
-        trex_up_images = [pygame.image.load('images/dino_right.png'), pygame.image.load('images/dino_left.png')]
-        trex_down_images = [pygame.image.load('images/dino_down_left.png'),
-                            pygame.image.load('images/dino_down_right.png')]
-        trex_current_images = trex_up_images.copy()
         trex_down = False
         trex_hitboxes = [[pygame.Rect((0, 0), (45, 30)), pygame.Rect((0, 0), (70, 30))],
                          [pygame.Rect((0, 0), (40, 30)), pygame.Rect((0, 0), (50, 45))]]
         trex_current_hitboxes = deepcopy(trex_hitboxes[0])
         calculate_trex_hitbox_pos()
-        change_freq_trex_image = 20
-        freq_count_trex_image = 0
-        current_image_num = 0
-
-        cactuses = [pygame.transform.scale(pygame.image.load('images/cactuses.png'), (120, 80)),
-                    pygame.transform.scale(pygame.image.load('images/cactuses3.png'), (90, 80)),
-                    pygame.transform.scale(pygame.image.load('images/cactuses2.png'), (30, 50)),
-                    pygame.transform.scale(pygame.image.load('images/cactuses1.png'), (40, 70))]
+        freq = 20
+        freq_count = 0
 
         cactuses_hitboxes = [pygame.Rect(field_width, 520, 120, 90),
                              pygame.Rect(field_width, 525, 85, 80),
                              pygame.Rect(field_width, 550, 30, 50),
                              pygame.Rect(field_width, 530, 35, 70)]
-
-        pterodactylus = [pygame.transform.scale(pygame.image.load('images/pterodactylus1.png'), (100, 60)),
-                         pygame.transform.scale(pygame.image.load('images/pterodactylus2.png'), (100, 60))]
 
         pterodactylus_hitboxes = [pygame.Rect(field_width, 440, 30, 30),
                                   pygame.Rect(field_width, 540, 30, 30),
@@ -114,9 +70,8 @@ class TRexGame:
                                        pygame.Rect((field_width + 30, 495), (60, 30))]
         pterodactylus_current_body_hitbox = pterodactylus_body_hitboxes[0].copy()
 
-        index = randint(0, len(cactuses) - 1)
+        index = randint(0, len(cactuses_hitboxes) - 1)
         current_hindrance = cactuses_hitboxes[index].copy()
-        current_hindrance_image = cactuses[index].copy()
         hindrance_speed = 3
         is_cactus = True
         score = 0
@@ -126,31 +81,17 @@ class TRexGame:
 
             calculate_trex_hitbox_pos()
 
-            freq_count_trex_image += 1
+            freq_count += 1
 
-            freq_count_trex_image = freq_count_trex_image % change_freq_trex_image
-            if freq_count_trex_image == 0:
-                current_image_num = 1 - current_image_num
+            freq_count = freq_count % freq
+            if freq_count == 0:
                 score += 1
                 if score % 50 == 0:
                     hindrance_speed += 1
 
-            if not is_cactus:
-                current_hindrance_image = pterodactylus[current_image_num].copy()
-
             action = None
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    quit_game()
-                if event.type == pygame.MOUSEBUTTONUP:
-                    pass
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        action = Actions.UP
-                    if event.key == pygame.K_DOWN:
-                        action = Actions.DOWN
-                if event.type == pygame.KEYUP:
-                    action = Actions.RELEASE_DOWN
+            if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
+                action = Actions.UP
 
             if action == Actions.UP:
                 if round(trex.position[1]) >= field_height - floor_height - trex_shape.radius:
@@ -158,17 +99,14 @@ class TRexGame:
             if action == Actions.DOWN:
                 if round(trex.position[1]) <= field_height - floor_height - trex_shape.radius:
                     trex.apply_impulse_at_local_point((0, 500), (0, 0))
-                trex_current_images = trex_down_images.copy()
                 trex_current_hitboxes = deepcopy(trex_hitboxes[1])
                 trex_down = True
                 calculate_trex_hitbox_pos()
             elif action == Actions.RELEASE_DOWN or action == Actions.UP:
-                trex_current_images = trex_up_images.copy()
                 trex_current_hitboxes = deepcopy(trex_hitboxes[0])
                 trex_down = False
                 calculate_trex_hitbox_pos()
 
-            draw_next_game_step(False)
             space.step(1 / 50)
 
             if is_cactus:
@@ -179,9 +117,8 @@ class TRexGame:
             if current_hindrance.x + width_to_add <= 0:
                 if uniform(0, 1) < 0.45:
                     is_cactus = True
-                    new_hindrance_index = randint(0, len(cactuses) - 1)
+                    new_hindrance_index = randint(0, len(cactuses_hitboxes) - 1)
                     current_hindrance = cactuses_hitboxes[new_hindrance_index].copy()
-                    current_hindrance_image = cactuses[new_hindrance_index].copy()
                 else:
                     is_cactus = False
                     if uniform(0, 1) < 0.55:
@@ -191,31 +128,10 @@ class TRexGame:
                         new_hindrance_index = randint(0, len(pterodactylus_hitboxes) - 2)
                         current_hindrance = pterodactylus_hitboxes[new_hindrance_index].copy()
                         pterodactylus_current_body_hitbox = pterodactylus_body_hitboxes[new_hindrance_index].copy()
-                    current_hindrance_image = pterodactylus[0].copy()
             else:
                 current_hindrance.x -= hindrance_speed
                 if not is_cactus:
                     pterodactylus_current_body_hitbox.x -= hindrance_speed
-                screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
-
-            screen.blit(self.font.render('Score: ' + str(score), False, dino_color),
-                        (field_width - 150, field_height / 3))
-
-            pygame.display.update()
 
             if collision_happened():
-                trex_current_images = [trex_game_over_image.copy(), trex_game_over_image.copy()]
-                draw_next_game_step(False)
-                screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
-                screen.blit(game_over_image, (field_width / 2 - 120, field_height / 2))
-                pygame.display.update()
-                wait = True
-                while wait:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            wait = False
-                quit_game()
                 continue_game = False
-
-
-
