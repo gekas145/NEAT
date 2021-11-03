@@ -220,5 +220,18 @@ class TRexGame:
                 quit_game()
                 continue_game = False
 
-
-
+            # if freq_count_trex_image == 0:
+            #     print("----------------------------------")
+            #     data = {
+            #         "own_height": 1 - (trex.position[1] - 360) / (510 - 360),
+            #         "distance_to_hindrance": (current_hindrance.x - trex.position[0]) / (600 - trex.position[0]),
+            #         "hindrance_height": current_hindrance.height / 90,
+            #         "hindrance_width": current_hindrance.width / 120,
+            #         "hindrance_flight_height": (580 - current_hindrance.y - current_hindrance.height) / 130,
+            #         "hindrance_speed": hindrance_speed
+            #     }
+            #     if not is_cactus:
+            #         data["hindrance_width"] += pterodactylus_current_body_hitbox.width / 120
+            #     else:
+            #         data["hindrance_flight_height"] = 0
+            #     print(data)
