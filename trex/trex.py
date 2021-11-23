@@ -8,17 +8,17 @@ from copy import deepcopy
 
 class TRexGame:
 
-    def __init__(self, agent=None):
-        pygame.font.init()
-        self.font = pygame.font.SysFont('Comic Sans MS', 20)
+    def __init__(self, agent=None, screen=None, font=None, clock=None, min_speed=3, max_speed=10):
+        if agent is None and (screen is None or font is None or clock is None):
+            raise Exception("When human is playing screen, font and clock have to be defined!")
         self.agent = agent
+        self.screen = screen
+        self.font = font
+        self.clock = clock
+        self.max_speed = max_speed
+        self.min_speed = min_speed
 
     def play_game(self):
-
-        def quit_game():
-            pygame.display.quit()
-            pygame.quit()
-            sys.exit()
 
         def calculate_trex_hitbox_pos():
             x, y = trex.position
@@ -29,7 +29,7 @@ class TRexGame:
                 trex_current_hitboxes[0] = pygame.Rect((x + 50, y + 5), (40, 30)).copy()
                 trex_current_hitboxes[1] = pygame.Rect((x + 20, y + 25), (50, 45)).copy()
 
-        def draw_next_game_step(draw_hitboxes=True):
+        def draw_next_game_step(screen, clock, draw_hitboxes=True):
             screen.fill(gray)
             screen.blit(trex_current_images[current_image_num], trex.position)
             if draw_hitboxes:
@@ -47,6 +47,21 @@ class TRexGame:
                 if not is_cactus and hitbox.colliderect(pterodactylus_current_body_hitbox):
                     return True
             return False
+
+        def get_game_data():
+            data = {
+                "own_height": 1 - (trex.position[1] - 360) / (510 - 360),
+                "distance_to_hindrance": (current_hindrance.x - trex.position[0]) / (600 - trex.position[0]),
+                "hindrance_height": current_hindrance.height / 90,
+                "hindrance_width": current_hindrance.width / 120,
+                "hindrance_flight_height": (580 - current_hindrance.y - current_hindrance.height) / 130,
+                "hindrance_speed": (hindrance_speed - self.min_speed) / self.max_speed
+            }
+            if not is_cactus:
+                data["hindrance_width"] += pterodactylus_current_body_hitbox.width / 120
+            else:
+                data["hindrance_flight_height"] = 0
+            return data
 
         space = pymunk.Space()
         space.gravity = 0, 180
@@ -70,10 +85,6 @@ class TRexGame:
         floor_shape.elasticity = 0.7
         floor_shape.friction = 0.3
         space.add(floor, floor_shape)
-
-        pygame.init()
-        screen = pygame.display.set_mode((field_width, field_height))
-        clock = pygame.time.Clock()
 
         game_over_image = pygame.transform.scale(pygame.image.load('images/game_over.png'), (270, 40))
 
@@ -116,7 +127,7 @@ class TRexGame:
         index = randint(0, len(cactuses) - 1)
         current_hindrance = cactuses_hitboxes[index].copy()
         current_hindrance_image = cactuses[index].copy()
-        hindrance_speed = 3
+        hindrance_speed = self.min_speed
         is_cactus = True
         score = 0
 
@@ -131,7 +142,7 @@ class TRexGame:
             if freq_count_trex_image == 0:
                 current_image_num = 1 - current_image_num
                 score += 1
-                if score % 50 == 0:
+                if score % 50 == 0 and hindrance_speed < self.max_speed:
                     hindrance_speed += 1
 
             if not is_cactus:
@@ -141,7 +152,7 @@ class TRexGame:
             if self.agent is None:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        quit_game()
+                        continue_game = False
                     if event.type == pygame.MOUSEBUTTONUP:
                         pass
                     if event.type == pygame.KEYDOWN:
@@ -171,7 +182,8 @@ class TRexGame:
                 trex_down = False
                 calculate_trex_hitbox_pos()
 
-            draw_next_game_step(False)
+            if self.screen is not None:
+                draw_next_game_step(self.screen, self.clock, False)
             space.step(1 / 50)
 
             if is_cactus:
@@ -199,39 +211,28 @@ class TRexGame:
                 current_hindrance.x -= hindrance_speed
                 if not is_cactus:
                     pterodactylus_current_body_hitbox.x -= hindrance_speed
-                screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
+                if self.screen is not None:
+                    self.screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
 
-            screen.blit(self.font.render('Score: ' + str(score), False, dino_color),
-                        (field_width - 150, field_height / 3))
-
-            pygame.display.update()
+            if self.screen is not None:
+                self.screen.blit(self.font.render('Score: ' + str(score), False, dino_color),
+                                 (field_width - 150, field_height / 3))
+                pygame.display.update()
 
             if collision_happened():
                 trex_current_images = [trex_game_over_image.copy(), trex_game_over_image.copy()]
-                draw_next_game_step(False)
-                screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
-                screen.blit(game_over_image, (field_width / 2 - 120, field_height / 2))
-                pygame.display.update()
-                wait = True
-                while wait:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            wait = False
-                quit_game()
+                if self.screen is not None:
+                    draw_next_game_step(self.screen, self.clock, False)
+                    self.screen.blit(current_hindrance_image, (current_hindrance.x, current_hindrance.y))
+                    self.screen.blit(game_over_image, (field_width / 2 - 120, field_height / 2))
+                    pygame.display.update()
+                    wait = True
+                    while wait:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                wait = False
                 continue_game = False
 
-            # if freq_count_trex_image == 0:
-            #     print("----------------------------------")
-            #     data = {
-            #         "own_height": 1 - (trex.position[1] - 360) / (510 - 360),
-            #         "distance_to_hindrance": (current_hindrance.x - trex.position[0]) / (600 - trex.position[0]),
-            #         "hindrance_height": current_hindrance.height / 90,
-            #         "hindrance_width": current_hindrance.width / 120,
-            #         "hindrance_flight_height": (580 - current_hindrance.y - current_hindrance.height) / 130,
-            #         "hindrance_speed": hindrance_speed
-            #     }
-            #     if not is_cactus:
-            #         data["hindrance_width"] += pterodactylus_current_body_hitbox.width / 120
-            #     else:
-            #         data["hindrance_flight_height"] = 0
-            #     print(data)
+            if freq_count_trex_image == 0:
+                print("----------------------------------")
+                print(get_game_data())
